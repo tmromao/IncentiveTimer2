@@ -25,7 +25,7 @@ private fun ScreenContent() {
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(stringResource(R.string.timer))
+        Text(stringResource(R.string.reward_list))
     }
 }
 
@@ -43,7 +43,6 @@ private fun RewardListScreenPreview() {
     IncentiveTimerTheme() {
         Surface() {
             RewardListScreen()
-
         }
     }
 }
