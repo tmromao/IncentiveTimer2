@@ -24,7 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.example.incentivetimer.rewardlist.RewardListScreen
 import com.example.incentivetimer.timer.TimerScreen
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,11 +44,11 @@ private fun ScreenContent() {
     val navController = rememberNavController()
 
     Scaffold(
-        topBar = {
+     /*   topBar = {
             TopAppBar(title = {
                 Text(stringResource(R.string.app_name))
             })
-        },
+        },*/
         bottomBar = {
             BottomNavigation {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()

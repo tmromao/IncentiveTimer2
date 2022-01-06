@@ -6,8 +6,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Deck
+import androidx.compose.material.icons.filled.LocalCarWash
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -15,34 +19,53 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.incentivetimer.R
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.ui.theme.ListBottomPadding
 
 @Composable
-fun RewardListScreen() {
-    ScreenContent()
+fun RewardListScreen(
+    viewModel: RewardListViewModel = hiltViewModel()
+) {
+    val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
+    ScreenContent(dummyRewards)
 }
 
 @Composable
-private fun ScreenContent() {
+private fun ScreenContent(
+    rewards: List<Reward>
+)
+{
 
-    val dummyRewards = mutableListOf<Reward>()
+   /* val dummyRewards = mutableListOf<Reward>()
     repeat(12) { index ->
         dummyRewards += Reward(icon = Icons.Default.Star, title = "Item $index", index)
-    }
+    }*/
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Scaffold(
+        topBar = {
+            TopAppBar(title = {
+                Text(stringResource(R.string.reward_list))
+            })
+        }
     ) {
-        // Text(stringResource(R.string.reward_list))
-        LazyColumn() {
-            items(dummyRewards) { rewardItem ->
-                RewardItem(reward = rewardItem)
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            // Text(stringResource(R.string.reward_list))
+            LazyColumn(contentPadding = PaddingValues(bottom = ListBottomPadding)) {
+                items(rewards) { rewardItem ->
+                    RewardItem(reward = rewardItem)
+                }
             }
         }
     }
+
 }
 
 
@@ -55,7 +78,7 @@ private fun RewardItem(
         onClick = {},
         modifier = modifier
             .fillMaxWidth()
-            .padding()
+            .padding(8.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -102,7 +125,6 @@ private fun RewardItemPreview() {
     }
 }
 
-
 @Preview(
     name = "Light mode",
     uiMode = Configuration.UI_MODE_NIGHT_NO,
@@ -117,7 +139,13 @@ private fun RewardItemPreview() {
 private fun ScreenContentPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            ScreenContent()
+            ScreenContent(
+                listOf(
+                    Reward(icon = Icons.Default.Star, title = "Reward 1", 5),
+                    Reward(icon = Icons.Default.LocalCarWash, title = "Reward 2", 15),
+                    Reward(icon = Icons.Default.Deck, title = "Reward 3", 25),
+                )
+            )
         }
     }
 }
