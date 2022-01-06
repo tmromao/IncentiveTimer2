@@ -10,7 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.incentivetimer.R
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 
@@ -33,14 +35,38 @@ private fun ScreenContent() {
 @Composable
 private fun RewardItem(
     icon: ImageVector,
+    title: String,
+    chanceInPercent: Int,
     modifier: Modifier = Modifier
 ) {
-    Card(onClick = {},
+    Card(
+        onClick = {},
         modifier = modifier
             .fillMaxWidth()
-            .padding()) {
-        Row() {
-            Icon(icon, contentDescription = null)
+            .padding()
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(
+                icon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .size(48.dp)
+                    .fillMaxWidth()
+            )
+            Column() {
+                Text(
+                    title,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.h6
+                )
+                Text(
+                    "$chanceInPercent%",
+                    style = MaterialTheme.typography.body2,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+            }
         }
     }
 }
@@ -59,7 +85,7 @@ private fun RewardItem(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            RewardItem(Icons.Default.Star)
+            RewardItem(Icons.Default.Star, "Title", 5)
         }
     }
 }
