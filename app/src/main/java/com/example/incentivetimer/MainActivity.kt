@@ -41,38 +41,44 @@ class MainActivity : ComponentActivity() {
 private fun ScreenContent() {
     val navController = rememberNavController()
 
-    Scaffold(bottomBar = {
-        BottomNavigation {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            bottomNavDestinations.forEach { bottomNavDestination ->
-                BottomNavigationItem(
-                    icon = {
-                        Icon(
-                            bottomNavDestination.icon,
-                            contentDescription = "null"
-                        )
-                    },
-                    label = {
-                        Text(
-                            stringResource(bottomNavDestination.label)
-                        )
-                    },
-                    alwaysShowLabel = false,
-                    selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.route } == true,
-                    onClick = {
-                        navController.navigate(bottomNavDestination.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+    Scaffold(
+        topBar = {
+            TopAppBar(title = {
+                Text(stringResource(R.string.app_name))
+            })
+        },
+        bottomBar = {
+            BottomNavigation {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+                bottomNavDestinations.forEach { bottomNavDestination ->
+                    BottomNavigationItem(
+                        icon = {
+                            Icon(
+                                bottomNavDestination.icon,
+                                contentDescription = "null"
+                            )
+                        },
+                        label = {
+                            Text(
+                                stringResource(bottomNavDestination.label)
+                            )
+                        },
+                        alwaysShowLabel = false,
+                        selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.route } == true,
+                        onClick = {
+                            navController.navigate(bottomNavDestination.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                            launchSingleTop = true
-                            restoreState = true
                         }
-                    }
-                )
-            }
-        }//BottomNavigation
-    }) { innerPadding ->
+                    )
+                }
+            }//BottomNavigation
+        }) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = bottomNavDestinations[0].route,

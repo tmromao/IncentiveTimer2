@@ -47,6 +47,11 @@ android {
     }
 }
 
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
+}
+
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.7.0'
