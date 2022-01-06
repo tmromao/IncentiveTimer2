@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">IncentiveTimer</string>
     <string name="timer">Timer</string>
+    <string name="reward_list">reward</string>
 </resources>

@@ -1,8 +1,6 @@
-package com.example.incentivetimer.timer
+package com.example.incentivetimer.rewardlist
 
-import android.content.res.Configuration.UI_MODE_NIGHT_NO
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.background
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
@@ -10,14 +8,13 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.incentivetimer.R
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 
 @Composable
-fun TimerScreen() {
+fun RewardListScreen() {
     ScreenContent()
 }
 
@@ -34,18 +31,18 @@ private fun ScreenContent() {
 
 @Preview(
     name = "Light mode",
-    uiMode = UI_MODE_NIGHT_NO
+    uiMode = Configuration.UI_MODE_NIGHT_NO
 )
 @Preview(
     name = "Dark mode",
-    uiMode = UI_MODE_NIGHT_YES,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
     showBackground = true
 )
 @Composable
-private fun ScreenContentPreview() {
+private fun RewardListScreenPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            ScreenContent()
+            RewardListScreen()
 
         }
     }
