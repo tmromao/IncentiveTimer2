@@ -2,6 +2,8 @@ package com.example.incentivetimer.rewardlist
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
@@ -14,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.incentivetimer.R
+import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 
 @Composable
@@ -23,20 +26,29 @@ fun RewardListScreen() {
 
 @Composable
 private fun ScreenContent() {
+
+    val dummyRewards = mutableListOf<Reward>()
+    repeat(12) { index ->
+        dummyRewards += Reward(icon = Icons.Default.Star, title = "Item $index", index)
+    }
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Text(stringResource(R.string.reward_list))
+        // Text(stringResource(R.string.reward_list))
+        LazyColumn() {
+            items(dummyRewards) { rewardItem ->
+                RewardItem(reward = rewardItem)
+            }
+        }
     }
 }
 
 
 @Composable
 private fun RewardItem(
-    icon: ImageVector,
-    title: String,
-    chanceInPercent: Int,
+    reward: Reward,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -47,7 +59,7 @@ private fun RewardItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                icon,
+                imageVector = reward.icon,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
@@ -56,12 +68,12 @@ private fun RewardItem(
             )
             Column() {
                 Text(
-                    title,
+                    text = reward.title,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.h6
                 )
                 Text(
-                    "$chanceInPercent%",
+                    text = "${reward.changeInPercent}%",
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -85,7 +97,7 @@ private fun RewardItem(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            RewardItem(Icons.Default.Star, "Title", 5)
+            RewardItem(Reward(Icons.Default.Star, "Title", 5))
         }
     }
 }
