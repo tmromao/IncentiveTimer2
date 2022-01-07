@@ -50,7 +50,10 @@ android {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
+
+        kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
+        kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.animation.ExperimentalMaterialApi"]
+
 }
 
 
@@ -98,6 +101,6 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-rxjava2:1.1.0-rc01"
 
     //Accompanist
-    implementation "com.google.accompanist:accompanist-navigation-animation:0.20.0"
+    //implementation "com.google.accompanist:accompanist-navigation-animation:0.20.0"
 
 }

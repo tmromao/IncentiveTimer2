@@ -4,6 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.StringRes
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -24,8 +27,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.incentivetimer.rewardlist.RewardListScreen
 import com.example.incentivetimer.timer.TimerScreen
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+
 import dagger.hilt.android.AndroidEntryPoint
 
+@ExperimentalAnimationApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,16 +44,17 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@ExperimentalAnimationApi
 @Composable
 private fun ScreenContent() {
     val navController = rememberNavController()
 
     Scaffold(
-     /*   topBar = {
-            TopAppBar(title = {
-                Text(stringResource(R.string.app_name))
-            })
-        },*/
+        /*   topBar = {
+               TopAppBar(title = {
+                   Text(stringResource(R.string.app_name))
+               })
+           },*/
         bottomBar = {
             BottomNavigation {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -80,12 +86,16 @@ private fun ScreenContent() {
                     )
                 }
             }//BottomNavigation
-        }) { innerPadding ->
+        }) {
+
+
+            innerPadding ->
         NavHost(
             navController = navController,
             startDestination = bottomNavDestinations[0].route,
-            Modifier.padding(innerPadding)
-        ) {
+            Modifier.padding(innerPadding),
+
+            ) {
             composable(BottomNavDestination.Timer.route) {
                 TimerScreen()
             }
@@ -112,6 +122,7 @@ sealed class BottomNavDestination(
         BottomNavDestination("rewardList", Icons.Outlined.List, R.string.reward_list)
 }
 
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun ScreenContentPreview() {
