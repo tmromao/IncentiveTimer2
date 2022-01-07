@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,7 +19,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,9 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.incentivetimer.R
 import com.example.incentivetimer.data.Reward
+import com.example.incentivetimer.ui.IconKeys
+import com.example.incentivetimer.ui.defaultIcon
+import com.example.incentivetimer.ui.rewardIcons
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 import com.example.incentivetimer.ui.theme.ListBottomPadding
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 @ExperimentalAnimationApi
@@ -38,8 +38,10 @@ import kotlinx.coroutines.launch
 fun RewardListScreen(
     viewModel: RewardListViewModel = hiltViewModel()
 ) {
-    val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
-    ScreenContent(dummyRewards)
+    val rewards by viewModel.rewards.observeAsState(listOf())
+    //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
+    //ScreenContent(dummyRewards)
+    ScreenContent(rewards)
 }
 
 @ExperimentalAnimationApi
@@ -138,7 +140,7 @@ private fun RewardItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = reward.icon,
+                imageVector = rewardIcons[reward.iconKey] ?: defaultIcon,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
@@ -152,7 +154,7 @@ private fun RewardItem(
                     style = MaterialTheme.typography.h6
                 )
                 Text(
-                    text = "${reward.changeInPercent}%",
+                    text = stringResource(R.string.chance) + ":${reward.changeInPercent}%",
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -176,7 +178,7 @@ private fun RewardItem(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            RewardItem(Reward(Icons.Default.Star, "Title", 5))
+            RewardItem(Reward(IconKeys.BATH_TUB, "Title", 5))
         }
     }
 }
@@ -198,9 +200,9 @@ private fun ScreenContentPreview() {
         Surface() {
             ScreenContent(
                 listOf(
-                    Reward(icon = Icons.Default.Star, title = "Reward 1", 5),
-                    Reward(icon = Icons.Default.LocalCarWash, title = "Reward 2", 15),
-                    Reward(icon = Icons.Default.Deck, title = "Reward 3", 25),
+                    Reward(iconKey = IconKeys.CAKE, title = "CAKE", 5),
+                    Reward(iconKey = IconKeys.BATH_TUB, title = "BATH_TUB", 15),
+                    Reward(iconKey = IconKeys.TV, title = "TV", 25),
                 )
             )
         }

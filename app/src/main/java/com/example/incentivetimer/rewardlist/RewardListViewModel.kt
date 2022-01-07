@@ -5,21 +5,29 @@ import androidx.compose.material.icons.filled.Star
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.example.incentivetimer.data.Reward
+import com.example.incentivetimer.data.RewardDao
+import com.example.incentivetimer.ui.IconKeys
+import com.example.incentivetimer.ui.defaultIcon
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class RewardListViewModel @Inject constructor() : ViewModel() {
+class RewardListViewModel @Inject constructor(
+    private val rewardDao: RewardDao,
+) : ViewModel() {
 
-    private val dummyRewardsLiveData = MutableLiveData<List<Reward>>()
+    val rewards = rewardDao.getAllRewards().asLiveData()
+
+ /*   private val dummyRewardsLiveData = MutableLiveData<List<Reward>>()
     val dummyRewards: LiveData<List<Reward>> = dummyRewardsLiveData
 
     init {
         val dummyRewards = mutableListOf<Reward>()
         repeat(12) { index ->
-            dummyRewards += Reward(icon = Icons.Default.Star, title = "Item $index", index)
+            dummyRewards += Reward(iconKey = IconKeys.CAKE, title = "Item $index", index)
         }
         dummyRewardsLiveData.value = dummyRewards
-    }
+    }*/
 }
