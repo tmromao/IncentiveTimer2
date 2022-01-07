@@ -1,4 +1,4 @@
-package com.example.incentivetimer.ui
+package com.example.incentivetimer.application
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

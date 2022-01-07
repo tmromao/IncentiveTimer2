@@ -10,6 +10,9 @@ buildscript {
 
         //https://developer.android.com/training/dependency-injection/hilt-android
         hilt_version = '2.38.1'
+
+        //https://developer.android.com/jetpack/androidx/releases/room
+        room_version = '2.4.0'
     }
     repositories {
         google()
