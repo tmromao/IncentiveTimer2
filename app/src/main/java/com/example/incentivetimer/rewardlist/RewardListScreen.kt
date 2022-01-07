@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Deck
 import androidx.compose.material.icons.filled.LocalCarWash
 import androidx.compose.material.icons.filled.Star
@@ -49,6 +50,12 @@ private fun ScreenContent(
             TopAppBar(title = {
                 Text(stringResource(R.string.reward_list))
             })
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_new_reward))
+
+            }
         }
     ) {
         Box(

@@ -10,6 +10,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.runtime.Composable
@@ -50,11 +51,7 @@ private fun ScreenContent() {
     val navController = rememberNavController()
 
     Scaffold(
-        /*   topBar = {
-               TopAppBar(title = {
-                   Text(stringResource(R.string.app_name))
-               })
-           },*/
+
         bottomBar = {
             BottomNavigation {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -86,9 +83,9 @@ private fun ScreenContent() {
                     )
                 }
             }//BottomNavigation
-        }) {
+        },
 
-
+    ) {
             innerPadding ->
         NavHost(
             navController = navController,
