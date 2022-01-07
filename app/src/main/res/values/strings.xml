@@ -3,4 +3,5 @@
     <string name="timer">Timer</string>
     <string name="reward_list">Reward list</string>
     <string name="add_new_reward">Add new reward</string>
+    <string name="string_to_top">Scroll to top</string>
 </resources>
