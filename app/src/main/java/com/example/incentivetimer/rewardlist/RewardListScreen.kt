@@ -78,10 +78,10 @@ private fun ScreenContent(
         val coroutineScope = rememberCoroutineScope()
 
         Box(
-            contentAlignment = Alignment.Center,
+           /* contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp)
+                .padding(8.dp)*/
         ) {
             // Text(stringResource(R.string.reward_list))
             LazyColumn(
@@ -92,6 +92,7 @@ private fun ScreenContent(
                     bottom = ListBottomPadding
                 ),
                 state = listState,
+                modifier = Modifier.fillMaxSize()
             ) {
                 items(rewards) { rewardItem ->
                     RewardItem(reward = rewardItem)

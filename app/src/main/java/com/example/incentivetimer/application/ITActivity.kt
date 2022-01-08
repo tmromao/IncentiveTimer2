@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.incentivetimer.AddEditReward.AddEditRewardScreen
 import com.example.incentivetimer.R
 import com.example.incentivetimer.rewardlist.RewardListScreen
 import com.example.incentivetimer.timer.TimerScreen
@@ -36,7 +37,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             IncentiveTimerTheme {
-                ScreenContent()
+               // ScreenContent()
+                AddEditRewardScreen()
             }
         }
     }
