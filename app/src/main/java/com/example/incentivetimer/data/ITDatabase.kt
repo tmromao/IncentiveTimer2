@@ -35,21 +35,21 @@ abstract class ITDatabase : RoomDatabase() {
                 rewardDao.insertReward(
                     Reward(
                         iconKey = IconKeys.CAKE,
-                        title = "1 piece of cake",
+                        name = "1 piece of cake",
                         changeInPercent = 5
                     )
                 )
                 rewardDao.insertReward(
                     Reward(
                         iconKey = IconKeys.BATH_TUB,
-                        title = "Take a bath",
+                        name = "Take a bath",
                         changeInPercent = 7
                     )
                 )
                 rewardDao.insertReward(
                     Reward(
                         iconKey = IconKeys.TV,
-                        title = "Watch 1 episode of my favorite show",
+                        name = "Watch 1 episode of my favorite show",
                         changeInPercent = 10
                     )
                 )

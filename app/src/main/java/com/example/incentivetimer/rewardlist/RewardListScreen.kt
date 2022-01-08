@@ -155,7 +155,7 @@ private fun RewardItem(
             )
             Column() {
                 Text(
-                    text = reward.title,
+                    text = reward.name,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.h6
                 )
@@ -206,9 +206,9 @@ private fun ScreenContentPreview() {
         Surface() {
             ScreenContent(
                 listOf(
-                    Reward(iconKey = IconKeys.CAKE, title = "CAKE", 5),
-                    Reward(iconKey = IconKeys.BATH_TUB, title = "BATH_TUB", 15),
-                    Reward(iconKey = IconKeys.TV, title = "TV", 25),
+                    Reward(iconKey = IconKeys.CAKE, name = "CAKE", 5),
+                    Reward(iconKey = IconKeys.BATH_TUB, name = "BATH_TUB", 15),
+                    Reward(iconKey = IconKeys.TV, name = "TV", 25),
                 ),
                 onAddNewRewardClicked = {}
             )

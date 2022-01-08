@@ -10,6 +10,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -23,6 +25,8 @@ import androidx.navigation.NavController
 import com.example.incentivetimer.R
 
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import kotlinx.coroutines.flow.collect
+
 
 @Composable
 fun AddEditRewardScreen(
@@ -33,13 +37,22 @@ fun AddEditRewardScreen(
     val rewardNameInput by viewModel.rewardNameInput.observeAsState("")
     val changeInPercentInput by viewModel.chanceInPercentInput.observeAsState(10)
 
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { event ->
+            when (event) {
+                AddEditResourceViewModel.AddEditRewardEvent.RewardCreated -> navController.popBackStack()
+            }
+        }
+    }
+
     ScreenContent(
         isEditMode = isEditMode,
         rewardNameInput = rewardNameInput,
         onRewardNameInputChanged = viewModel::onRewardNameInputChanged,
         chanceInPercentInput = changeInPercentInput,
         onChanceInputChanged = viewModel::onChangeInPercentInputChanged,
-        onCloseClicked = {navController.popBackStack()}
+        onCloseClicked = { navController.popBackStack() },
+        onSaveClicked = viewModel::onSavedClicked
     )
 }
 
@@ -50,6 +63,7 @@ private fun ScreenContent(
     onRewardNameInputChanged: (input: String) -> Unit,
     chanceInPercentInput: Int,
     onChanceInputChanged: (input: Int) -> Unit,
+    onSaveClicked: () -> Unit,
     onCloseClicked: () -> Unit,
 ) {
 
@@ -73,7 +87,7 @@ private fun ScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = onSaveClicked,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
@@ -132,6 +146,7 @@ private fun RewardItemPreview() {
                 chanceInPercentInput = 10,
                 onChanceInputChanged = {},
                 onCloseClicked = {},
+                onSaveClicked = {},
             )
         }
     }
