@@ -1,12 +1,14 @@
 package com.example.incentivetimer.AddEditReward
 
 import android.content.res.Configuration
+import android.system.Os.close
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,7 +38,8 @@ fun AddEditRewardScreen(
         rewardNameInput = rewardNameInput,
         onRewardNameInputChanged = viewModel::onRewardNameInputChanged,
         chanceInPercentInput = changeInPercentInput,
-        onChanceInputChanged = viewModel::onChangeInPercentInputChanged
+        onChanceInputChanged = viewModel::onChangeInPercentInputChanged,
+        onCloseClicked = {navController.popBackStack()}
     )
 }
 
@@ -47,15 +50,26 @@ private fun ScreenContent(
     onRewardNameInputChanged: (input: String) -> Unit,
     chanceInPercentInput: Int,
     onChanceInputChanged: (input: Int) -> Unit,
+    onCloseClicked: () -> Unit,
 ) {
 
     Scaffold(
         topBar = {
             val appBarTitle =
                 stringResource(if (isEditMode) R.string.edit_reward else R.string.add_reward)
-            TopAppBar(title = {
-                Text(appBarTitle)
-            })
+            TopAppBar(
+                title = {
+                    Text(appBarTitle)
+                },
+                navigationIcon = {
+                    IconButton(onClick = onCloseClicked) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = stringResource(R.string.close)
+                        )
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -69,7 +83,8 @@ private fun ScreenContent(
 
             }
         },
-    ) {
+
+        ) {
         Column(Modifier.padding(16.dp)) {
             TextField(
                 value = rewardNameInput,
@@ -116,6 +131,7 @@ private fun RewardItemPreview() {
                 onRewardNameInputChanged = {},
                 chanceInPercentInput = 10,
                 onChanceInputChanged = {},
+                onCloseClicked = {},
             )
         }
     }
