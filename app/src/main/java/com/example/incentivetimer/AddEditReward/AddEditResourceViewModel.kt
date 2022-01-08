@@ -14,11 +14,18 @@ class AddEditResourceViewModel @Inject constructor(
 
     val isEditMode = rewardId != null
 
-    private val rewardNameInputLiveData = savedStateHandle.getLiveData<String>("rewardNameLiveData")
+    private val rewardNameInputLiveData = savedStateHandle.getLiveData<String>("rewardNameLiveData","")
     val rewardNameInput: LiveData<String> = rewardNameInputLiveData
+
+    private val chanceInPercentInputLiveData = savedStateHandle.getLiveData<Int>("chanceInPercentInputLiveData", 10)
+    val chanceInPercentInput: LiveData<Int> = chanceInPercentInputLiveData
 
     fun onRewardNameInputChanged(input: String) {
         rewardNameInputLiveData.value = input
+    }
+
+    fun onChangeInPercentInputChanged(input: Int) {
+        chanceInPercentInputLiveData.value = input
     }
 }
 
