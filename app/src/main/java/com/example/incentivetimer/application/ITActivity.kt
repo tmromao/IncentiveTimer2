@@ -37,8 +37,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             IncentiveTimerTheme {
-               // ScreenContent()
-                AddEditRewardScreen()
+                 ScreenContent()
+                //AddEditRewardScreen()
             }
         }
     }
@@ -85,19 +85,21 @@ private fun ScreenContent() {
             }//BottomNavigation
         },
 
-    ) {
-            innerPadding ->
+        ) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = bottomNavDestinations[0].route,
             Modifier.padding(innerPadding),
 
             ) {
-            composable(BottomNavDestination.Timer.route) {
-                TimerScreen()
+            composable(BottomNavDestination.TimerScreen.route) {
+                TimerScreen(navController)
             }
-            composable(BottomNavDestination.RewardList.route) {
-                RewardListScreen()
+            composable(BottomNavDestination.RewardListScreen.route) {
+                RewardListScreen(navController)
+            }
+            composable(FullScreenDestinations.AddEditRewardScreen.route){
+                AddEditRewardScreen(navController)
             }
         }
     }
@@ -105,8 +107,8 @@ private fun ScreenContent() {
 }
 
 val bottomNavDestinations = listOf<BottomNavDestination>(
-    BottomNavDestination.Timer,
-    BottomNavDestination.RewardList
+    BottomNavDestination.TimerScreen,
+    BottomNavDestination.RewardListScreen
 )
 
 sealed class BottomNavDestination(
@@ -114,9 +116,15 @@ sealed class BottomNavDestination(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    object Timer : BottomNavDestination("timer", Icons.Outlined.Timer, R.string.timer)
-    object RewardList :
-        BottomNavDestination("rewardList", Icons.Outlined.List, R.string.reward_list)
+    object TimerScreen : BottomNavDestination(route = "timer", Icons.Outlined.Timer, R.string.timer)
+    object RewardListScreen :
+        BottomNavDestination(route = "reward_list", Icons.Outlined.List, R.string.reward_list)
+}
+
+sealed class FullScreenDestinations(
+    val route: String,
+) {
+    object AddEditRewardScreen : FullScreenDestinations(route = "add_edit_screen")
 }
 
 @ExperimentalAnimationApi

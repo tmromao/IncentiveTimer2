@@ -24,7 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.incentivetimer.R
+import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.ui.IconKeys
 import com.example.incentivetimer.ui.defaultIcon
@@ -36,18 +38,21 @@ import kotlinx.coroutines.launch
 @ExperimentalAnimationApi
 @Composable
 fun RewardListScreen(
+    navController: NavController,
     viewModel: RewardListViewModel = hiltViewModel()
 ) {
     val rewards by viewModel.rewards.observeAsState(listOf())
     //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
     //ScreenContent(dummyRewards)
-    ScreenContent(rewards)
+    ScreenContent(rewards = rewards,
+        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.route) })
 }
 
 @ExperimentalAnimationApi
 @Composable
 private fun ScreenContent(
-    rewards: List<Reward>
+    rewards: List<Reward>,
+    onAddNewRewardClicked: () -> Unit,
 ) {
 
     /* val dummyRewards = mutableListOf<Reward>()
@@ -63,7 +68,7 @@ private fun ScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = onAddNewRewardClicked,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
@@ -78,10 +83,10 @@ private fun ScreenContent(
         val coroutineScope = rememberCoroutineScope()
 
         Box(
-           /* contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)*/
+            /* contentAlignment = Alignment.Center,
+             modifier = Modifier
+                 .fillMaxSize()
+                 .padding(8.dp)*/
         ) {
             // Text(stringResource(R.string.reward_list))
             LazyColumn(
@@ -204,8 +209,10 @@ private fun ScreenContentPreview() {
                     Reward(iconKey = IconKeys.CAKE, title = "CAKE", 5),
                     Reward(iconKey = IconKeys.BATH_TUB, title = "BATH_TUB", 15),
                     Reward(iconKey = IconKeys.TV, title = "TV", 25),
-                )
+                ),
+                onAddNewRewardClicked = {}
             )
+
         }
     }
 }

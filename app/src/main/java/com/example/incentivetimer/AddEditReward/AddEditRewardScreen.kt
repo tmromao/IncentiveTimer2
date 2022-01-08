@@ -17,12 +17,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.incentivetimer.R
 
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 
 @Composable
-fun AddEditRewardScreen() {
+fun AddEditRewardScreen(
+    navController: NavController,
+) {
     val viewModel: AddEditResourceViewModel = hiltViewModel()
     val isEditMode = viewModel.isEditMode
     val rewardNameInput by viewModel.rewardNameInput.observeAsState("")
