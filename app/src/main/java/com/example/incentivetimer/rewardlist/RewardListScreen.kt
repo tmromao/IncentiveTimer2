@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.incentivetimer.AddEditReward.ARG_REWARD_ID
 import com.example.incentivetimer.R
 import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.data.Reward
@@ -43,13 +44,17 @@ fun RewardListScreen(
     //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
     //ScreenContent(dummyRewards)
     ScreenContent(rewards = rewards,
-        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.route) })
+        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.route) },
+        onRewardItemClicked = { id ->
+            navController.navigate(FullScreenDestinations.AddEditRewardScreen.route + "?$ARG_REWARD_ID=$id")
+        })
 }
 
 @ExperimentalAnimationApi
 @Composable
 private fun ScreenContent(
     rewards: List<Reward>,
+    onRewardItemClicked: (Long) -> Unit,
     onAddNewRewardClicked: () -> Unit,
 ) {
 
@@ -57,7 +62,6 @@ private fun ScreenContent(
      repeat(12) { index ->
          dummyRewards += Reward(icon = Icons.Default.Star, title = "Item $index", index)
      }*/
-
     Scaffold(
         topBar = {
             TopAppBar(title = {
@@ -97,8 +101,10 @@ private fun ScreenContent(
                 state = listState,
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(rewards) { rewardItem ->
-                    RewardItem(reward = rewardItem)
+                items(rewards) { reward ->
+                    RewardItem(reward = reward, onItemClicked = { id ->
+                        onRewardItemClicked(id)
+                    })
                 }
             }
             AnimatedVisibility(
@@ -134,10 +140,11 @@ private fun ScreenContent(
 @Composable
 private fun RewardItem(
     reward: Reward,
+    onItemClicked: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(
-        onClick = {},
+        onClick = { onItemClicked(reward.id) },
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
@@ -182,7 +189,7 @@ private fun RewardItem(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            RewardItem(Reward(IconKey.BATH_TUB, "Title", 5))
+            RewardItem(Reward(IconKey.BATH_TUB, "Title", 5), onItemClicked = {})
         }
     }
 }
@@ -208,7 +215,9 @@ private fun ScreenContentPreview() {
                     Reward(iconKey = IconKey.BATH_TUB, name = "BATH_TUB", 15),
                     Reward(iconKey = IconKey.TV, name = "TV", 25),
                 ),
-                onAddNewRewardClicked = {}
+                onAddNewRewardClicked = {},
+                onRewardItemClicked = {}
+
             )
 
         }

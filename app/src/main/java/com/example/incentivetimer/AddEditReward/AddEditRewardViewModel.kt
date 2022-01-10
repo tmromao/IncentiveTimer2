@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,32 +21,71 @@ class AddEditRewardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel(), AddEditRewardScreenActions {
     private val rewardId = savedStateHandle.get<Long>(ARG_REWARD_ID)
-    val isEditMode = rewardId != null
+    private var reward: Reward? = null
+
+    val isEditMode = rewardId != NO_REWARD_ID
+
+    private fun populateEmptyInputValuesWithRewardData() {
+        val reward = this.reward
+        if (reward != null) {
+            if (rewardNameInputLiveData.value == null) {
+                rewardNameInputLiveData.value = reward.name
+            }
+            if (chanceInPercentInputLiveData.value == null) {
+                chanceInPercentInputLiveData.value = reward.changeInPercent
+            }
+            if (rewardIconKeySelectionLiveData.value == null) {
+                rewardIconKeySelectionLiveData.value = reward.iconKey
+            }
+        }
+    }
+
+    private fun populateInputValuesWithDefaultValues() {
+        rewardNameInputLiveData.value = ""
+        chanceInPercentInputLiveData.value = 10
+        rewardIconKeySelectionLiveData.value = defaultRewardIconKey
+    }
 
     private val rewardNameInputLiveData =
-        savedStateHandle.getLiveData<String>("rewardNameLiveData", "")
+        savedStateHandle.getLiveData<String>("rewardNameLiveData")
     val rewardNameInput: LiveData<String> = rewardNameInputLiveData
 
-    private val rewardNameInputIsErrorLiveData = savedStateHandle.getLiveData<Boolean>("rewardNameInputIsError", false)
-    val rewardNameInputIsError : LiveData<Boolean> = rewardNameInputIsErrorLiveData
-
     private val chanceInPercentInputLiveData =
-        savedStateHandle.getLiveData<Int>("chanceInPercentInputLiveData", 10)
-    val chanceInPercentInput: LiveData<Int> = chanceInPercentInputLiveData
+        savedStateHandle.getLiveData<Int>("chanceInPercentInputLiveData")
 
-    private val rewardIconSelectionLiveData =
-        savedStateHandle.getLiveData<IconKey>("rewardIconSelectionLiveData", defaultRewardIconKey)
-    val rewardIconKeySelection: LiveData<IconKey> = rewardIconSelectionLiveData
+    val chanceInPercentInput: LiveData<Int> = chanceInPercentInputLiveData
+    private val rewardIconKeySelectionLiveData =
+        savedStateHandle.getLiveData<IconKey>("rewardIconSelectionLiveData")
+
+    val rewardIconKeySelection: LiveData<IconKey> = rewardIconKeySelectionLiveData
 
     private val showRewardIconSelectionDialogLiveData =
         savedStateHandle.getLiveData<Boolean>("showRewardIconSelectionDialogLiveData", false)
+
+    private val rewardNameInputIsErrorLiveData =
+        savedStateHandle.getLiveData<Boolean>("rewardNameInputIsError", false)
+    val rewardNameInputIsError: LiveData<Boolean> = rewardNameInputIsErrorLiveData
+
     val showRewardIconSelectionDialog: LiveData<Boolean> = showRewardIconSelectionDialogLiveData
 
     private val eventChannel = Channel<AddEditRewardEvent>()
     val events = eventChannel.receiveAsFlow()
 
+    init {
+        logcat { "rewardId: $rewardId" }
+        if (rewardId != null && rewardId != NO_REWARD_ID) {
+            viewModelScope.launch {
+                reward = rewardDao.getRewardById(rewardId)
+                populateEmptyInputValuesWithRewardData()
+            }
+        } else {
+            populateInputValuesWithDefaultValues()
+        }
+    }
+
     sealed class AddEditRewardEvent {
         object RewardCreated : AddEditRewardEvent()
+        object RewardUpdated : AddEditRewardEvent()
     }
 
     override fun onChangeInPercentInputChanged(input: Int) {
@@ -61,7 +101,7 @@ class AddEditRewardViewModel @Inject constructor(
     }
 
     override fun onRewardIconSelected(iconKey: IconKey) {
-        rewardIconSelectionLiveData.value = iconKey
+        rewardIconKeySelectionLiveData.value = iconKey
     }
 
     override fun onRewardIconDialogDismissRequest() {
@@ -77,8 +117,15 @@ class AddEditRewardViewModel @Inject constructor(
 
         viewModelScope.launch {
             if (!rewardNameInput.isNullOrBlank() && chanceInPercentInput != null && rewardIconKeySelection != null) {
-                if (rewardId != null) {
-                    //updateReward()
+                val reward = reward
+                if (reward != null) {
+                    updateReward(
+                        reward.copy(
+                            name = rewardNameInput,
+                            changeInPercent = chanceInPercentInput,
+                            iconKey = rewardIconKeySelection
+                        )
+                    )
                 } else {
                     createReward(
                         Reward(
@@ -89,25 +136,31 @@ class AddEditRewardViewModel @Inject constructor(
                     )
                 }
             } else {
-                if (rewardNameInput.isNullOrBlank()){
+                if (rewardNameInput.isNullOrBlank()) {
                     rewardNameInputIsErrorLiveData.value = true
                 }
             }
         }
     }
 
-    private fun validateInput(){
+    private fun validateInput() {
 
     }
 
     private suspend fun updateReward(reward: Reward) {
+        rewardDao.updateReward(reward)
+        eventChannel.send(AddEditRewardEvent.RewardUpdated)
+        //TODO: 20/12/2021 Show confirmation message
+
     }
 
     private suspend fun createReward(reward: Reward) {
         rewardDao.insertReward(reward)
         eventChannel.send(AddEditRewardEvent.RewardCreated)
+        //TODO: 20/12/2021 Show confirmation message
     }
 
 }
 
-const val ARG_REWARD_ID = "ARG_REWARD_ID"
+const val ARG_REWARD_ID = "rewardId"
+const val NO_REWARD_ID = -1L

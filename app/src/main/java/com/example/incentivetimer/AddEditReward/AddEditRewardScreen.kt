@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.composables.ITIconButton
+import com.example.incentivetimer.core.util.exhaustive
 import com.example.incentivetimer.ui.IconKey
 import com.example.incentivetimer.ui.defaultRewardIconKey
 
@@ -56,7 +57,8 @@ fun AddEditRewardScreen(
         viewModel.events.collect { event ->
             when (event) {
                 AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> navController.popBackStack()
-            }
+                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> navController.popBackStack()
+            }.exhaustive
         }
     }
 
@@ -120,10 +122,10 @@ private fun ScreenContent(
             TextField(
                 value = rewardNameInput,
                 onValueChange = actions::onRewardNameInputChanged,
-                modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.reward_name)) },
                 singleLine = true,
                 isError = rewardNameInputIsError,
+                modifier = Modifier.fillMaxWidth(),
             )
             if (rewardNameInputIsError) {
                 Text(
