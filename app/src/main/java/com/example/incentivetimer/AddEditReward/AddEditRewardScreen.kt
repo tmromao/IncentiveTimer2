@@ -147,6 +147,7 @@ private fun RewardItemPreview() {
                 onChanceInputChanged = {},
                 onCloseClicked = {},
                 onSaveClicked = {},
+                //onRewardIconButtonClicked = {}
             )
         }
     }

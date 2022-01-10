@@ -1,15 +1,8 @@
 package com.example.incentivetimer.rewardlist
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.data.RewardDao
-import com.example.incentivetimer.ui.IconKeys
-import com.example.incentivetimer.ui.defaultIcon
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

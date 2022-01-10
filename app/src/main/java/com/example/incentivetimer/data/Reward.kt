@@ -1,12 +1,12 @@
 package com.example.incentivetimer.data
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.incentivetimer.ui.IconKey
 
 @Entity(tableName = "rewards")
 data class Reward(
-    val iconKey: String,
+    val iconKey: IconKey,
     val name: String,
     val changeInPercent: Int,
     val isUnlocked: Boolean = false,

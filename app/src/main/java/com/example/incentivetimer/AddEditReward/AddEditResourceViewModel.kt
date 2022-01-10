@@ -1,14 +1,12 @@
 package com.example.incentivetimer.AddEditReward
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.data.RewardDao
-import com.example.incentivetimer.ui.IconKeys
+import com.example.incentivetimer.ui.IconKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -57,7 +55,7 @@ class AddEditResourceViewModel @Inject constructor(
                     //updateReward()
                 } else {
                     //TODO:19/12/2021 Set the icon the add/edit screen
-                    createReward(Reward(IconKeys.CAKE, rewardNameInput, chanceInPercentInput))
+                    createReward(Reward(IconKey.CAKE, rewardNameInput, chanceInPercentInput))
                 }
             } else {
                 // Show Snackbar

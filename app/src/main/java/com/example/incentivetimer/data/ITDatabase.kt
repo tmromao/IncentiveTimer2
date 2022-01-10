@@ -1,15 +1,10 @@
 package com.example.incentivetimer.data
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bathtub
-import androidx.compose.material.icons.filled.Cake
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.Tv
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.incentivetimer.di.ApplicationScope
-import com.example.incentivetimer.ui.IconKeys
+import com.example.incentivetimer.ui.IconKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,21 +29,21 @@ abstract class ITDatabase : RoomDatabase() {
             applicationScope.launch {
                 rewardDao.insertReward(
                     Reward(
-                        iconKey = IconKeys.CAKE,
+                        iconKey = IconKey.CAKE,
                         name = "1 piece of cake",
                         changeInPercent = 5
                     )
                 )
                 rewardDao.insertReward(
                     Reward(
-                        iconKey = IconKeys.BATH_TUB,
+                        iconKey = IconKey.BATH_TUB,
                         name = "Take a bath",
                         changeInPercent = 7
                     )
                 )
                 rewardDao.insertReward(
                     Reward(
-                        iconKey = IconKeys.TV,
+                        iconKey = IconKey.TV,
                         name = "Watch 1 episode of my favorite show",
                         changeInPercent = 10
                     )

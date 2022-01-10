@@ -28,9 +28,7 @@ import androidx.navigation.NavController
 import com.example.incentivetimer.R
 import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.data.Reward
-import com.example.incentivetimer.ui.IconKeys
-import com.example.incentivetimer.ui.defaultIcon
-import com.example.incentivetimer.ui.rewardIcons
+import com.example.incentivetimer.ui.IconKey
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 import com.example.incentivetimer.ui.theme.ListBottomPadding
 import kotlinx.coroutines.launch
@@ -146,7 +144,7 @@ private fun RewardItem(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = rewardIcons[reward.iconKey] ?: defaultIcon,
+                imageVector = reward.iconKey.rewardIcon,
                 contentDescription = null,
                 modifier = Modifier
                     .padding(8.dp)
@@ -184,7 +182,7 @@ private fun RewardItem(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            RewardItem(Reward(IconKeys.BATH_TUB, "Title", 5))
+            RewardItem(Reward(IconKey.BATH_TUB, "Title", 5))
         }
     }
 }
@@ -206,9 +204,9 @@ private fun ScreenContentPreview() {
         Surface() {
             ScreenContent(
                 listOf(
-                    Reward(iconKey = IconKeys.CAKE, name = "CAKE", 5),
-                    Reward(iconKey = IconKeys.BATH_TUB, name = "BATH_TUB", 15),
-                    Reward(iconKey = IconKeys.TV, name = "TV", 25),
+                    Reward(iconKey = IconKey.CAKE, name = "CAKE", 5),
+                    Reward(iconKey = IconKey.BATH_TUB, name = "BATH_TUB", 15),
+                    Reward(iconKey = IconKey.TV, name = "TV", 25),
                 ),
                 onAddNewRewardClicked = {}
             )
