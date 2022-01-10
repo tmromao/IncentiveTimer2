@@ -1,35 +1,29 @@
 package com.example.incentivetimer.AddEditReward
 
 import android.content.res.Configuration
-import android.system.Os.close
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.composables.ITIconButton
 import com.example.incentivetimer.ui.IconKey
-import com.example.incentivetimer.ui.defaultRewardIcon
+import com.example.incentivetimer.ui.defaultRewardIconKey
 
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.flow.collect
 
 
@@ -37,15 +31,19 @@ import kotlinx.coroutines.flow.collect
 fun AddEditRewardScreen(
     navController: NavController,
 ) {
-    val viewModel: AddEditResourceViewModel = hiltViewModel()
+    val viewModel: AddEditRewardViewModel = hiltViewModel()
     val isEditMode = viewModel.isEditMode
     val rewardNameInput by viewModel.rewardNameInput.observeAsState("")
     val changeInPercentInput by viewModel.chanceInPercentInput.observeAsState(10)
+    val rewardIconKeySelection by viewModel.rewardIconKeySelection.observeAsState(initial = defaultRewardIconKey)
+    val showRewardIconSelectionDialog by viewModel.showRewardIconSelectionDialog.observeAsState(
+        false
+    )
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                AddEditResourceViewModel.AddEditRewardEvent.RewardCreated -> navController.popBackStack()
+                AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> navController.popBackStack()
             }
         }
     }
@@ -56,9 +54,13 @@ fun AddEditRewardScreen(
         onRewardNameInputChanged = viewModel::onRewardNameInputChanged,
         chanceInPercentInput = changeInPercentInput,
         onChanceInputChanged = viewModel::onChangeInPercentInputChanged,
+        rewardIconKeySelection = rewardIconKeySelection,
+        onRewardIconButtonClicked = viewModel::onRewardIconButtonClicked,
+        showRewardIconSelectionDialog = showRewardIconSelectionDialog,
+        onIconSelected = viewModel::onRewardIconSelected,
+        onRewardIconDialogDismissRequest = viewModel::onRewardIconDialogDismissed,
         onCloseClicked = { navController.popBackStack() },
         onSaveClicked = viewModel::onSavedClicked,
-        onRewardIconButtonClicked = viewModel::onRewardIconButtonClicked,
     )
 }
 
@@ -69,10 +71,18 @@ private fun ScreenContent(
     onRewardNameInputChanged: (input: String) -> Unit,
     chanceInPercentInput: Int,
     onChanceInputChanged: (input: Int) -> Unit,
+    rewardIconKeySelection: IconKey,
+    //4 eventos para lidar com o AlertDialog
+    onRewardIconButtonClicked: () -> Unit,
+    showRewardIconSelectionDialog: Boolean,
+    onIconSelected: (IconKey) -> Unit,
+    onRewardIconDialogDismissRequest: () -> Unit,
+    //
     onSaveClicked: () -> Unit,
     onCloseClicked: () -> Unit,
-    onRewardIconButtonClicked: () -> Unit,
-) {
+
+
+    ) {
 
     Scaffold(
         topBar = {
@@ -123,9 +133,9 @@ private fun ScreenContent(
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ITIconButton(onClick = {}, modifier = Modifier.size(64.dp)) {
+            ITIconButton(onClick = onRewardIconButtonClicked, modifier = Modifier.size(64.dp)) {
                 Icon(
-                    imageVector = defaultRewardIcon,
+                    imageVector = rewardIconKeySelection.rewardIcon,
                     contentDescription = stringResource(R.string.select_icon),
                     modifier = Modifier
                         .fillMaxSize()
@@ -135,27 +145,54 @@ private fun ScreenContent(
             }
         }
     }
-
-    RewardIconSelectionDialog(onDismissRequest = {}, onIconSelected = {})
+    if (showRewardIconSelectionDialog) {
+        RewardIconSelectionDialog(
+            onDismissRequest = onRewardIconDialogDismissRequest,
+            onIconSelected = onIconSelected
+        )
+    }
 }
 
 @Composable
-fun RewardIconSelectionDialog(
+private fun RewardIconSelectionDialog(
     onDismissRequest: () -> Unit,
     onIconSelected: (iconKey: IconKey) -> Unit,
 ) {
-    Dialog(onDismissRequest = onDismissRequest) {
-        FlowRow {
-            IconKey.values().forEach { iconKey ->
-                IconButton(onClick = { onIconSelected(iconKey) }) {
-                    Icon(imageVector = iconKey.rewardIcon, contentDescription = null)
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(stringResource(R.string.select_icon))
+        },
+        text = {
+            FlowRow(Modifier.fillMaxWidth(), mainAxisAlignment = MainAxisAlignment.Center) {
+                IconKey.values().forEach { iconKey ->
+                    IconButton(onClick = {
+                        onIconSelected(iconKey)
+                        onDismissRequest()
+                    }) {
+                        Icon(
+                            imageVector = iconKey.rewardIcon,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .padding(8.dp)
+                        )
+                    }
                 }
-
             }
 
+        },
+        buttons = {
+            TextButton(
+                onClick = onDismissRequest,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            ) {
+                Text(stringResource(R.string.cancel))
+            }
         }
-    }
-
+    )
 }
 
 @Preview(
@@ -180,7 +217,11 @@ private fun RewardItemPreview() {
                 onChanceInputChanged = {},
                 onCloseClicked = {},
                 onSaveClicked = {},
-                onRewardIconButtonClicked = {}
+                onRewardIconButtonClicked = {},
+                showRewardIconSelectionDialog = false,
+                onIconSelected = {},
+                onRewardIconDialogDismissRequest = {},
+                rewardIconKeySelection = defaultRewardIconKey,
             )
         }
     }

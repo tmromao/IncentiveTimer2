@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IncentiveTimerTheme {
                  ScreenContent()
-                //AddEditRewardScreen()
+
             }
         }
     }

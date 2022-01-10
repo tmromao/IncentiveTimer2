@@ -26,7 +26,7 @@ enum class IconKey(val rewardIcon: ImageVector) {
     SHOPPING_CART(Icons.Default.ShoppingCart),
     PIZZA(Icons.Default.LocalPizza),
 }
-val defaultRewardIcon = Icons.Default.Star
+val defaultRewardIconKey = IconKey.STAR
 
 /*
 val rewardIcons = mapOf<String, ImageVector>(
