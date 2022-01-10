@@ -22,6 +22,9 @@ class AddEditResourceViewModel @Inject constructor(
 
     val isEditMode = rewardId != null
 
+    private val showRewardIconSelectionDialog =
+        savedStateHandle.getLiveData<Boolean>("showRewardIconSelectionDialog",false)
+
     private val rewardNameInputLiveData =
         savedStateHandle.getLiveData<String>("rewardNameLiveData", "")
     val rewardNameInput: LiveData<String> = rewardNameInputLiveData
@@ -43,6 +46,14 @@ class AddEditResourceViewModel @Inject constructor(
 
     fun onChangeInPercentInputChanged(input: Int) {
         chanceInPercentInputLiveData.value = input
+    }
+
+    fun onRewardIconButtonClicked(){
+        showRewardIconSelectionDialog.value = true
+    }
+
+    fun onRewardIconDialogDismissed(){
+        showRewardIconSelectionDialog.value = false
     }
 
     fun onSavedClicked() {

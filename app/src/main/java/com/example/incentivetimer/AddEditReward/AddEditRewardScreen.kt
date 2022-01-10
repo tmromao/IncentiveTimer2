@@ -20,11 +20,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
+import com.example.incentivetimer.core.ui.composables.ITIconButton
+import com.example.incentivetimer.ui.IconKey
+import com.example.incentivetimer.ui.defaultRewardIcon
 
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import com.google.accompanist.flowlayout.FlowRow
 import kotlinx.coroutines.flow.collect
 
 
@@ -52,7 +57,8 @@ fun AddEditRewardScreen(
         chanceInPercentInput = changeInPercentInput,
         onChanceInputChanged = viewModel::onChangeInPercentInputChanged,
         onCloseClicked = { navController.popBackStack() },
-        onSaveClicked = viewModel::onSavedClicked
+        onSaveClicked = viewModel::onSavedClicked,
+        onRewardIconButtonClicked = viewModel::onRewardIconButtonClicked,
     )
 }
 
@@ -65,6 +71,7 @@ private fun ScreenContent(
     onChanceInputChanged: (input: Int) -> Unit,
     onSaveClicked: () -> Unit,
     onCloseClicked: () -> Unit,
+    onRewardIconButtonClicked: () -> Unit,
 ) {
 
     Scaffold(
@@ -115,15 +122,41 @@ private fun ScreenContent(
                     onChanceInputChanged((chanceAsFloat * 100).toInt())
                 }
             )
-            Text(
-                text = "$chanceInPercentInput%",
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            ITIconButton(onClick = {}, modifier = Modifier.size(64.dp)) {
+                Icon(
+                    imageVector = defaultRewardIcon,
+                    contentDescription = stringResource(R.string.select_icon),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
+                )
+
+            }
         }
     }
+
+    RewardIconSelectionDialog(onDismissRequest = {}, onIconSelected = {})
 }
 
+@Composable
+fun RewardIconSelectionDialog(
+    onDismissRequest: () -> Unit,
+    onIconSelected: (iconKey: IconKey) -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        FlowRow {
+            IconKey.values().forEach { iconKey ->
+                IconButton(onClick = { onIconSelected(iconKey) }) {
+                    Icon(imageVector = iconKey.rewardIcon, contentDescription = null)
+                }
+
+            }
+
+        }
+    }
+
+}
 
 @Preview(
     name = "Light mode",
@@ -147,7 +180,7 @@ private fun RewardItemPreview() {
                 onChanceInputChanged = {},
                 onCloseClicked = {},
                 onSaveClicked = {},
-                //onRewardIconButtonClicked = {}
+                onRewardIconButtonClicked = {}
             )
         }
     }
