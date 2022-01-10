@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,9 @@ fun AddEditRewardScreen(
     val viewModel: AddEditRewardViewModel = hiltViewModel()
     val isEditMode = viewModel.isEditMode
     val rewardNameInput by viewModel.rewardNameInput.observeAsState("")
+
+    val rewardNameInputIsError by viewModel.rewardNameInputIsError.observeAsState(false)
+
     val changeInPercentInput by viewModel.chanceInPercentInput.observeAsState(10)
     val rewardIconKeySelection by viewModel.rewardIconKeySelection.observeAsState(initial = defaultRewardIconKey)
     val showRewardIconSelectionDialog by viewModel.showRewardIconSelectionDialog.observeAsState(
@@ -59,11 +63,12 @@ fun AddEditRewardScreen(
     ScreenContent(
         isEditMode = isEditMode,
         rewardNameInput = rewardNameInput,
+        rewardNameInputIsError = rewardNameInputIsError,
         chanceInPercentInput = changeInPercentInput,
         rewardIconKeySelection = rewardIconKeySelection,
         showRewardIconSelectionDialog = showRewardIconSelectionDialog,
-        onCloseClicked = { navController.popBackStack() },
         actions = viewModel,
+        onCloseClicked = { navController.popBackStack() },
     )
 }
 
@@ -71,6 +76,7 @@ fun AddEditRewardScreen(
 private fun ScreenContent(
     isEditMode: Boolean,
     rewardNameInput: String,
+    rewardNameInputIsError: Boolean,
     chanceInPercentInput: Int,
     rewardIconKeySelection: IconKey,
     showRewardIconSelectionDialog: Boolean,
@@ -116,8 +122,16 @@ private fun ScreenContent(
                 onValueChange = actions::onRewardNameInputChanged,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.reward_name)) },
-                singleLine = true
+                singleLine = true,
+                isError = rewardNameInputIsError,
             )
+            if (rewardNameInputIsError) {
+                Text(
+                    stringResource(R.string.field_cant_be_blank),
+                    style = MaterialTheme.typography.body2,
+                    color = MaterialTheme.colors.error,
+                )
+            }
             Spacer(Modifier.height(16.dp))
             Text(stringResource(R.string.chance) + ": $chanceInPercentInput")
             Slider(
@@ -127,7 +141,10 @@ private fun ScreenContent(
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ITIconButton(onClick = actions::onRewardIconButtonClicked, modifier = Modifier.size(64.dp)) {
+            ITIconButton(
+                onClick = actions::onRewardIconButtonClicked,
+                modifier = Modifier.size(64.dp)
+            ) {
                 Icon(
                     imageVector = rewardIconKeySelection.rewardIcon,
                     contentDescription = stringResource(R.string.select_icon),
@@ -206,18 +223,19 @@ private fun RewardItemPreview() {
             ScreenContent(
                 isEditMode = false,
                 rewardNameInput = "Example reward",
+                rewardNameInputIsError = false,
                 chanceInPercentInput = 10,
                 onCloseClicked = {},
                 showRewardIconSelectionDialog = false,
                 rewardIconKeySelection = defaultRewardIconKey,
-                actions = object : AddEditRewardScreenActions{
+                actions = object : AddEditRewardScreenActions {
                     override fun onRewardNameInputChanged(input: String) {}
                     override fun onChangeInPercentInputChanged(input: Int) {}
                     override fun onRewardIconButtonClicked() {}
                     override fun onRewardIconSelected(iconKey: IconKey) {}
                     override fun onRewardIconDialogDismissRequest() {}
                     override fun onSaveClicked() {}
-                }
+                },
             )
         }
     }

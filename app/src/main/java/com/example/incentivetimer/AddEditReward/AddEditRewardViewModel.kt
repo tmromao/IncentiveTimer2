@@ -26,6 +26,9 @@ class AddEditRewardViewModel @Inject constructor(
         savedStateHandle.getLiveData<String>("rewardNameLiveData", "")
     val rewardNameInput: LiveData<String> = rewardNameInputLiveData
 
+    private val rewardNameInputIsErrorLiveData = savedStateHandle.getLiveData<Boolean>("rewardNameInputIsError", false)
+    val rewardNameInputIsError : LiveData<Boolean> = rewardNameInputIsErrorLiveData
+
     private val chanceInPercentInputLiveData =
         savedStateHandle.getLiveData<Int>("chanceInPercentInputLiveData", 10)
     val chanceInPercentInput: LiveData<Int> = chanceInPercentInputLiveData
@@ -70,19 +73,31 @@ class AddEditRewardViewModel @Inject constructor(
         val chanceInPercentInput = chanceInPercentInput.value
         val rewardIconKeySelection = rewardIconKeySelection.value
 
+        rewardNameInputIsErrorLiveData.value = false
+
         viewModelScope.launch {
-            if (rewardNameInput != null && chanceInPercentInput != null && rewardIconKeySelection != null &&
-                rewardNameInput.isNotBlank()) {
+            if (!rewardNameInput.isNullOrBlank() && chanceInPercentInput != null && rewardIconKeySelection != null) {
                 if (rewardId != null) {
                     //updateReward()
                 } else {
-                    //TODO:19/12/2021 Set the icon the add/edit screen
-                    createReward(Reward(rewardIconKeySelection, rewardNameInput, chanceInPercentInput))
+                    createReward(
+                        Reward(
+                            rewardIconKeySelection,
+                            rewardNameInput,
+                            chanceInPercentInput
+                        )
+                    )
                 }
             } else {
-                // Show Snackbar
+                if (rewardNameInput.isNullOrBlank()){
+                    rewardNameInputIsErrorLiveData.value = true
+                }
             }
         }
+    }
+
+    private fun validateInput(){
+
     }
 
     private suspend fun updateReward(reward: Reward) {
