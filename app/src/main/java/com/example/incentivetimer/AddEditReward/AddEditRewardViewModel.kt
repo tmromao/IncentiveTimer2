@@ -18,7 +18,7 @@ import javax.inject.Inject
 class AddEditRewardViewModel @Inject constructor(
     private val rewardDao: RewardDao,
     savedStateHandle: SavedStateHandle,
-) : ViewModel() {
+) : ViewModel(), AddEditRewardScreenActions {
     private val rewardId = savedStateHandle.get<Long>(ARG_REWARD_ID)
     val isEditMode = rewardId != null
 
@@ -45,37 +45,39 @@ class AddEditRewardViewModel @Inject constructor(
         object RewardCreated : AddEditRewardEvent()
     }
 
-    fun onChangeInPercentInputChanged(input: Int) {
+    override fun onChangeInPercentInputChanged(input: Int) {
         chanceInPercentInputLiveData.value = input
     }
 
-    fun onRewardNameInputChanged(input: String) {
+    override fun onRewardNameInputChanged(input: String) {
         rewardNameInputLiveData.value = input
     }
 
-    fun onRewardIconButtonClicked() {
+    override fun onRewardIconButtonClicked() {
         showRewardIconSelectionDialogLiveData.value = true
     }
 
-    fun onRewardIconSelected(iconKey: IconKey) {
+    override fun onRewardIconSelected(iconKey: IconKey) {
         rewardIconSelectionLiveData.value = iconKey
     }
 
-    fun onRewardIconDialogDismissed() {
+    override fun onRewardIconDialogDismissRequest() {
         showRewardIconSelectionDialogLiveData.value = false
     }
 
-    fun onSavedClicked() {
+    override fun onSaveClicked() {
         val rewardNameInput = rewardNameInput.value
         val chanceInPercentInput = chanceInPercentInput.value
+        val rewardIconKeySelection = rewardIconKeySelection.value
 
         viewModelScope.launch {
-            if (rewardNameInput != null && chanceInPercentInput != null && rewardNameInput.isNotBlank()) {
+            if (rewardNameInput != null && chanceInPercentInput != null && rewardIconKeySelection != null &&
+                rewardNameInput.isNotBlank()) {
                 if (rewardId != null) {
                     //updateReward()
                 } else {
                     //TODO:19/12/2021 Set the icon the add/edit screen
-                    createReward(Reward(IconKey.CAKE, rewardNameInput, chanceInPercentInput))
+                    createReward(Reward(rewardIconKeySelection, rewardNameInput, chanceInPercentInput))
                 }
             } else {
                 // Show Snackbar

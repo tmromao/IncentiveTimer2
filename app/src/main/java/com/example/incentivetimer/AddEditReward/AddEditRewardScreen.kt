@@ -26,6 +26,14 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.flow.collect
 
+interface AddEditRewardScreenActions {
+    fun onRewardNameInputChanged(input: String)
+    fun onChangeInPercentInputChanged(input: Int)
+    fun onRewardIconButtonClicked()
+    fun onRewardIconSelected(iconKey: IconKey)
+    fun onRewardIconDialogDismissRequest()
+    fun onSaveClicked()
+}
 
 @Composable
 fun AddEditRewardScreen(
@@ -51,16 +59,11 @@ fun AddEditRewardScreen(
     ScreenContent(
         isEditMode = isEditMode,
         rewardNameInput = rewardNameInput,
-        onRewardNameInputChanged = viewModel::onRewardNameInputChanged,
         chanceInPercentInput = changeInPercentInput,
-        onChanceInputChanged = viewModel::onChangeInPercentInputChanged,
         rewardIconKeySelection = rewardIconKeySelection,
-        onRewardIconButtonClicked = viewModel::onRewardIconButtonClicked,
         showRewardIconSelectionDialog = showRewardIconSelectionDialog,
-        onIconSelected = viewModel::onRewardIconSelected,
-        onRewardIconDialogDismissRequest = viewModel::onRewardIconDialogDismissed,
         onCloseClicked = { navController.popBackStack() },
-        onSaveClicked = viewModel::onSavedClicked,
+        actions = viewModel,
     )
 }
 
@@ -68,21 +71,12 @@ fun AddEditRewardScreen(
 private fun ScreenContent(
     isEditMode: Boolean,
     rewardNameInput: String,
-    onRewardNameInputChanged: (input: String) -> Unit,
     chanceInPercentInput: Int,
-    onChanceInputChanged: (input: Int) -> Unit,
     rewardIconKeySelection: IconKey,
-    //4 eventos para lidar com o AlertDialog
-    onRewardIconButtonClicked: () -> Unit,
     showRewardIconSelectionDialog: Boolean,
-    onIconSelected: (IconKey) -> Unit,
-    onRewardIconDialogDismissRequest: () -> Unit,
-    //
-    onSaveClicked: () -> Unit,
+    actions: AddEditRewardScreenActions,
     onCloseClicked: () -> Unit,
-
-
-    ) {
+) {
 
     Scaffold(
         topBar = {
@@ -104,7 +98,7 @@ private fun ScreenContent(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onSaveClicked,
+                onClick = actions::onSaveClicked,
                 modifier = Modifier.padding(16.dp)
             ) {
                 Icon(
@@ -119,7 +113,7 @@ private fun ScreenContent(
         Column(Modifier.padding(16.dp)) {
             TextField(
                 value = rewardNameInput,
-                onValueChange = onRewardNameInputChanged,
+                onValueChange = actions::onRewardNameInputChanged,
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text(stringResource(R.string.reward_name)) },
                 singleLine = true
@@ -129,11 +123,11 @@ private fun ScreenContent(
             Slider(
                 value = chanceInPercentInput.toFloat() / 100,
                 onValueChange = { chanceAsFloat ->
-                    onChanceInputChanged((chanceAsFloat * 100).toInt())
+                    actions.onChangeInPercentInputChanged((chanceAsFloat * 100).toInt())
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            ITIconButton(onClick = onRewardIconButtonClicked, modifier = Modifier.size(64.dp)) {
+            ITIconButton(onClick = actions::onRewardIconButtonClicked, modifier = Modifier.size(64.dp)) {
                 Icon(
                     imageVector = rewardIconKeySelection.rewardIcon,
                     contentDescription = stringResource(R.string.select_icon),
@@ -147,8 +141,8 @@ private fun ScreenContent(
     }
     if (showRewardIconSelectionDialog) {
         RewardIconSelectionDialog(
-            onDismissRequest = onRewardIconDialogDismissRequest,
-            onIconSelected = onIconSelected
+            onDismissRequest = actions::onRewardIconDialogDismissRequest,
+            onIconSelected = actions::onRewardIconSelected
         )
     }
 }
@@ -212,16 +206,18 @@ private fun RewardItemPreview() {
             ScreenContent(
                 isEditMode = false,
                 rewardNameInput = "Example reward",
-                onRewardNameInputChanged = {},
                 chanceInPercentInput = 10,
-                onChanceInputChanged = {},
                 onCloseClicked = {},
-                onSaveClicked = {},
-                onRewardIconButtonClicked = {},
                 showRewardIconSelectionDialog = false,
-                onIconSelected = {},
-                onRewardIconDialogDismissRequest = {},
                 rewardIconKeySelection = defaultRewardIconKey,
+                actions = object : AddEditRewardScreenActions{
+                    override fun onRewardNameInputChanged(input: String) {}
+                    override fun onChangeInPercentInputChanged(input: Int) {}
+                    override fun onRewardIconButtonClicked() {}
+                    override fun onRewardIconSelected(iconKey: IconKey) {}
+                    override fun onRewardIconDialogDismissRequest() {}
+                    override fun onSaveClicked() {}
+                }
             )
         }
     }
