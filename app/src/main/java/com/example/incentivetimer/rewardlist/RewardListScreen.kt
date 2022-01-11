@@ -13,19 +13,24 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.incentivetimer.AddEditReward.ADD_EDIT_REWARD_RESULT
 import com.example.incentivetimer.AddEditReward.ARG_REWARD_ID
+import com.example.incentivetimer.AddEditReward.RESULT_REWARD_ADDED
+import com.example.incentivetimer.AddEditReward.RESULT_REWARD_UPDATED
 import com.example.incentivetimer.R
 import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.data.Reward
@@ -33,6 +38,7 @@ import com.example.incentivetimer.ui.IconKey
 import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
 import com.example.incentivetimer.ui.theme.ListBottomPadding
 import kotlinx.coroutines.launch
+import logcat.logcat
 
 @ExperimentalAnimationApi
 @Composable
@@ -41,13 +47,43 @@ fun RewardListScreen(
     viewModel: RewardListViewModel = hiltViewModel()
 ) {
     val rewards by viewModel.rewards.observeAsState(listOf())
+
+    //TODO : 21/12/2021 Check if we can turn the result into a sealed class!
+    val addEditRewardResult =
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+            ADD_EDIT_REWARD_RESULT
+        )?.observeAsState()
+
+    //ScaffoldState to display the snackbar. Notice it is "=" (not "by")
+    val scaffoldState = rememberScaffoldState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(key1 = addEditRewardResult) {
+        logcat{"LaunchedEffect called"}
+        navController.currentBackStackEntry?.savedStateHandle?.remove<String>(ADD_EDIT_REWARD_RESULT)
+
+        addEditRewardResult?.value?.let { addEditRewardResult ->
+            when (addEditRewardResult) {
+                RESULT_REWARD_ADDED -> {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_added))
+                }
+                RESULT_REWARD_UPDATED -> {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_updated))
+                }
+            }
+
+        }
+    }
+
     //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
     //ScreenContent(dummyRewards)
     ScreenContent(rewards = rewards,
         onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.route) },
         onRewardItemClicked = { id ->
             navController.navigate(FullScreenDestinations.AddEditRewardScreen.route + "?$ARG_REWARD_ID=$id")
-        })
+        },
+    scaffoldState = scaffoldState)
 }
 
 @ExperimentalAnimationApi
@@ -56,6 +92,7 @@ private fun ScreenContent(
     rewards: List<Reward>,
     onRewardItemClicked: (Long) -> Unit,
     onAddNewRewardClicked: () -> Unit,
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
 ) {
 
     /* val dummyRewards = mutableListOf<Reward>()
@@ -71,19 +108,18 @@ private fun ScreenContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddNewRewardClicked,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(end = 16.dp, bottom = 16.dp)
             ) {
                 Icon(
                     Icons.Default.Add,
                     contentDescription = stringResource(R.string.add_new_reward)
                 )
-
             }
-        }
+        },
+        scaffoldState = scaffoldState,
     ) {
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
-
         Box(
             /* contentAlignment = Alignment.Center,
              modifier = Modifier
@@ -127,15 +163,12 @@ private fun ScreenContent(
                     Icon(
                         imageVector = Icons.Default.ExpandLess,
                         contentDescription = stringResource(R.string.string_to_top),
-
-                        )
+                    )
                 }
             }
         }
     }
-
 }
-
 
 @Composable
 private fun RewardItem(
@@ -169,7 +202,6 @@ private fun RewardItem(
                     style = MaterialTheme.typography.body2,
                     modifier = Modifier.fillMaxWidth()
                 )
-
             }
         }
     }
@@ -216,10 +248,9 @@ private fun ScreenContentPreview() {
                     Reward(iconKey = IconKey.TV, name = "TV", 25),
                 ),
                 onAddNewRewardClicked = {},
-                onRewardItemClicked = {}
+                onRewardItemClicked = {},
 
             )
-
         }
     }
 }

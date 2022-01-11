@@ -25,26 +25,6 @@ class AddEditRewardViewModel @Inject constructor(
 
     val isEditMode = rewardId != NO_REWARD_ID
 
-    private fun populateEmptyInputValuesWithRewardData() {
-        val reward = this.reward
-        if (reward != null) {
-            if (rewardNameInputLiveData.value == null) {
-                rewardNameInputLiveData.value = reward.name
-            }
-            if (chanceInPercentInputLiveData.value == null) {
-                chanceInPercentInputLiveData.value = reward.changeInPercent
-            }
-            if (rewardIconKeySelectionLiveData.value == null) {
-                rewardIconKeySelectionLiveData.value = reward.iconKey
-            }
-        }
-    }
-
-    private fun populateInputValuesWithDefaultValues() {
-        rewardNameInputLiveData.value = ""
-        chanceInPercentInputLiveData.value = 10
-        rewardIconKeySelectionLiveData.value = defaultRewardIconKey
-    }
 
     private val rewardNameInputLiveData =
         savedStateHandle.getLiveData<String>("rewardNameLiveData")
@@ -80,6 +60,33 @@ class AddEditRewardViewModel @Inject constructor(
             }
         } else {
             populateInputValuesWithDefaultValues()
+        }
+    }
+
+    private fun populateEmptyInputValuesWithRewardData() {
+        val reward = this.reward
+        if (reward != null) {
+            if (rewardNameInputLiveData.value == null) {
+                rewardNameInputLiveData.value = reward.name
+            }
+            if (chanceInPercentInputLiveData.value == null) {
+                chanceInPercentInputLiveData.value = reward.changeInPercent
+            }
+            if (rewardIconKeySelectionLiveData.value == null) {
+                rewardIconKeySelectionLiveData.value = reward.iconKey
+            }
+        }
+    }
+
+    private fun populateInputValuesWithDefaultValues() {
+        if (rewardNameInputLiveData.value == null) {
+            rewardNameInputLiveData.value = ""
+        }
+        if (chanceInPercentInputLiveData.value == null) {
+            chanceInPercentInputLiveData.value = 10
+        }
+        if (rewardIconKeySelectionLiveData.value == null) {
+            rewardIconKeySelectionLiveData.value = defaultRewardIconKey
         }
     }
 
@@ -164,3 +171,7 @@ class AddEditRewardViewModel @Inject constructor(
 
 const val ARG_REWARD_ID = "rewardId"
 const val NO_REWARD_ID = -1L
+
+const val ADD_EDIT_REWARD_RESULT = "ADD_EDIT_REWARD_RESULT"
+const val RESULT_REWARD_ADDED = "RESULT_REWARD_ADDED"
+const val RESULT_REWARD_UPDATED = "RESULT_REWARD_UPDATED"

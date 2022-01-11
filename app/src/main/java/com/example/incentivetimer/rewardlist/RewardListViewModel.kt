@@ -24,3 +24,4 @@ class RewardListViewModel @Inject constructor(
         dummyRewardsLiveData.value = dummyRewards
     }*/
 }
+

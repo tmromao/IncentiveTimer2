@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.composables.ITIconButton
 import com.example.incentivetimer.core.util.exhaustive
+
 import com.example.incentivetimer.ui.IconKey
 import com.example.incentivetimer.ui.defaultRewardIconKey
 
@@ -56,8 +57,14 @@ fun AddEditRewardScreen(
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
-                AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> navController.popBackStack()
-                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> navController.popBackStack()
+                AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        ADD_EDIT_REWARD_RESULT,RESULT_REWARD_ADDED
+                    )
+                }
+                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> navController.previousBackStackEntry?.savedStateHandle?.set(
+                    ADD_EDIT_REWARD_RESULT, RESULT_REWARD_UPDATED
+                )
             }.exhaustive
         }
     }
