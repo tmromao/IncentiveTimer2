@@ -55,36 +55,43 @@ private fun ScreenContent() {
     val navController = rememberNavController()
     Scaffold(
         bottomBar = {
-            BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                bottomNavDestinations.forEach { bottomNavDestination ->
-                    BottomNavigationItem(
-                        icon = {
-                            Icon(
-                                bottomNavDestination.icon,
-                                contentDescription = "null"
-                            )
-                        },
-                        label = {
-                            Text(
-                                stringResource(bottomNavDestination.label)
-                            )
-                        },
-                        alwaysShowLabel = false,
-                        selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.route } == true,
-                        onClick = {
-                            navController.navigate(bottomNavDestination.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+
+            val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
+            if (hideBottomBar == null || !hideBottomBar) {
+                BottomNavigation {
+
+
+                    bottomNavDestinations.forEach { bottomNavDestination ->
+                        BottomNavigationItem(
+                            icon = {
+                                Icon(
+                                    bottomNavDestination.icon,
+                                    contentDescription = "null"
+                                )
+                            },
+                            label = {
+                                Text(
+                                    stringResource(bottomNavDestination.label)
+                                )
+                            },
+                            alwaysShowLabel = false,
+                            selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.route } == true,
+                            onClick = {
+                                navController.navigate(bottomNavDestination.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
                             }
-                        }
-                    )
-                }
-            }//BottomNavigation
+                        )
+                    }
+                }//BottomNavigation
+
+            }
         },
 
         ) { innerPadding ->
@@ -103,9 +110,11 @@ private fun ScreenContent() {
             composable(
                 FullScreenDestinations.AddEditRewardScreen.route + "?$ARG_REWARD_ID={$ARG_REWARD_ID}",
                 arguments = listOf(navArgument(ARG_REWARD_ID) {
-                    type = NavType.LongType
                     defaultValue = NO_REWARD_ID
-                })
+                }, navArgument(ARG_HIDE_BOTTOM_BAR) {
+                    defaultValue = true
+                }
+                )
             ) {
                 AddEditRewardScreen(navController)
             }
@@ -134,6 +143,8 @@ sealed class FullScreenDestinations(
 ) {
     object AddEditRewardScreen : FullScreenDestinations(route = "add_edit_screen")
 }
+
+const val ARG_HIDE_BOTTOM_BAR = "ARG_HIDE_BOTTOM_BAR"
 
 @ExperimentalAnimationApi
 @Preview(showBackground = true)
