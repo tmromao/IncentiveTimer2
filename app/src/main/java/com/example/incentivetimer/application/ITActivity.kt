@@ -10,12 +10,13 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -53,16 +54,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun ScreenContent() {
     val navController = rememberNavController()
+    var bottomBarHeight by remember { mutableStateOf(0) }
+
+
     Scaffold(
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
+
             if (hideBottomBar == null || !hideBottomBar) {
                 BottomNavigation {
-
-
                     bottomNavDestinations.forEach { bottomNavDestination ->
                         BottomNavigationItem(
                             icon = {
@@ -98,7 +100,7 @@ private fun ScreenContent() {
         NavHost(
             navController = navController,
             startDestination = bottomNavDestinations[0].route,
-            Modifier.padding(innerPadding),
+            Modifier.padding(innerPadding).padding(bottom = bottomBarHeight.dp),
 
             ) {
             composable(BottomNavDestination.TimerScreen.route) {
@@ -120,7 +122,6 @@ private fun ScreenContent() {
             }
         }
     }
-
 }
 
 val bottomNavDestinations = listOf<BottomNavDestination>(

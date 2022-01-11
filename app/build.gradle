@@ -53,7 +53,8 @@ android {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi"]
-    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.animation.ExperimentalMaterialApi"]
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi"]
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi"]
 }
 
 /*

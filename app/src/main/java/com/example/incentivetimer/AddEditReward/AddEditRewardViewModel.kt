@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.data.RewardDao
 import com.example.incentivetimer.ui.IconKey
@@ -25,28 +26,28 @@ class AddEditRewardViewModel @Inject constructor(
 
     val isEditMode = rewardId != NO_REWARD_ID
 
-
     private val rewardNameInputLiveData =
         savedStateHandle.getLiveData<String>("rewardNameLiveData")
     val rewardNameInput: LiveData<String> = rewardNameInputLiveData
 
     private val chanceInPercentInputLiveData =
         savedStateHandle.getLiveData<Int>("chanceInPercentInputLiveData")
-
     val chanceInPercentInput: LiveData<Int> = chanceInPercentInputLiveData
+
     private val rewardIconKeySelectionLiveData =
         savedStateHandle.getLiveData<IconKey>("rewardIconSelectionLiveData")
-
     val rewardIconKeySelection: LiveData<IconKey> = rewardIconKeySelectionLiveData
-
-    private val showRewardIconSelectionDialogLiveData =
-        savedStateHandle.getLiveData<Boolean>("showRewardIconSelectionDialogLiveData", false)
 
     private val rewardNameInputIsErrorLiveData =
         savedStateHandle.getLiveData<Boolean>("rewardNameInputIsError", false)
     val rewardNameInputIsError: LiveData<Boolean> = rewardNameInputIsErrorLiveData
 
+    private val showRewardIconSelectionDialogLiveData =
+        savedStateHandle.getLiveData<Boolean>("showRewardIconSelectionDialogLiveData", false)
     val showRewardIconSelectionDialog: LiveData<Boolean> = showRewardIconSelectionDialogLiveData
+
+    private val showDeleteRewardConfirmationDialogLiveData = savedStateHandle.getLiveData<Boolean>("showDeleteRewardConfirmationDialogLiveData" )
+    val showDeleteRewardConfirmationDialog : LiveData<Boolean> = showDeleteRewardConfirmationDialogLiveData
 
     private val eventChannel = Channel<AddEditRewardEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -93,6 +94,7 @@ class AddEditRewardViewModel @Inject constructor(
     sealed class AddEditRewardEvent {
         object RewardCreated : AddEditRewardEvent()
         object RewardUpdated : AddEditRewardEvent()
+        object RewardDeleted: AddEditRewardEvent()
     }
 
     override fun onChangeInPercentInputChanged(input: Int) {
@@ -111,7 +113,7 @@ class AddEditRewardViewModel @Inject constructor(
         rewardIconKeySelectionLiveData.value = iconKey
     }
 
-    override fun onRewardIconDialogDismissRequest() {
+    override fun onRewardIconDialogDismissed() {
         showRewardIconSelectionDialogLiveData.value = false
     }
 
@@ -150,23 +152,34 @@ class AddEditRewardViewModel @Inject constructor(
         }
     }
 
-    private fun validateInput() {
-
-    }
-
     private suspend fun updateReward(reward: Reward) {
         rewardDao.updateReward(reward)
         eventChannel.send(AddEditRewardEvent.RewardUpdated)
-        //TODO: 20/12/2021 Show confirmation message
-
     }
 
     private suspend fun createReward(reward: Reward) {
         rewardDao.insertReward(reward)
         eventChannel.send(AddEditRewardEvent.RewardCreated)
-        //TODO: 20/12/2021 Show confirmation message
     }
 
+    override fun onDeleteRewardClicked() {
+        showDeleteRewardConfirmationDialogLiveData.value = true
+    }
+
+    override fun onDeleteRewardConfirmed() {
+        showDeleteRewardConfirmationDialogLiveData.value = false
+        viewModelScope.launch {
+            val reward = reward
+            if(reward != null) {
+                rewardDao.deleteReward(reward)
+                eventChannel.send(AddEditRewardEvent.RewardDeleted)
+            }
+        }
+    }
+
+    override fun onDeleteRewardDialogDismissed() {
+        showDeleteRewardConfirmationDialogLiveData.value = false
+    }
 }
 
 const val ARG_REWARD_ID = "rewardId"
@@ -175,3 +188,4 @@ const val NO_REWARD_ID = -1L
 const val ADD_EDIT_REWARD_RESULT = "ADD_EDIT_REWARD_RESULT"
 const val RESULT_REWARD_ADDED = "RESULT_REWARD_ADDED"
 const val RESULT_REWARD_UPDATED = "RESULT_REWARD_UPDATED"
+const val RESULT_REWARD_DELETE = "RESULT_REWARD_DELETED"

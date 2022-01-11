@@ -6,12 +6,12 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,14 +29,19 @@ import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.flow.collect
 
+
 interface AddEditRewardScreenActions {
     fun onRewardNameInputChanged(input: String)
     fun onChangeInPercentInputChanged(input: Int)
     fun onRewardIconButtonClicked()
     fun onRewardIconSelected(iconKey: IconKey)
-    fun onRewardIconDialogDismissRequest()
+    fun onRewardIconDialogDismissed()
     fun onSaveClicked()
+    fun onDeleteRewardClicked()
+    fun onDeleteRewardConfirmed()
+    fun onDeleteRewardDialogDismissed()
 }
+
 
 @Composable
 fun AddEditRewardScreen(
@@ -53,18 +58,34 @@ fun AddEditRewardScreen(
     val showRewardIconSelectionDialog by viewModel.showRewardIconSelectionDialog.observeAsState(
         false
     )
+    val showDeleteRewardConfirmationDialog by viewModel.showDeleteRewardConfirmationDialog.observeAsState(
+        false
+    )
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
         viewModel.events.collect { event ->
             when (event) {
                 AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> {
+                    keyboardController?.hide()
                     navController.previousBackStackEntry?.savedStateHandle?.set(
-                        ADD_EDIT_REWARD_RESULT,RESULT_REWARD_ADDED
+                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_ADDED
                     )
+                    navController.popBackStack()
                 }
-                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                    ADD_EDIT_REWARD_RESULT, RESULT_REWARD_UPDATED
-                )
+                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_UPDATED
+                    )
+                    navController.popBackStack()
+                }
+                AddEditRewardViewModel.AddEditRewardEvent.RewardDeleted -> {
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_DELETE
+                    )
+                    navController.popBackStack()
+                }
             }.exhaustive
         }
     }
@@ -76,8 +97,9 @@ fun AddEditRewardScreen(
         chanceInPercentInput = changeInPercentInput,
         rewardIconKeySelection = rewardIconKeySelection,
         showRewardIconSelectionDialog = showRewardIconSelectionDialog,
+        showDeleteRewardConfirmationDialog = showDeleteRewardConfirmationDialog,
         actions = viewModel,
-        onCloseClicked = { navController.popBackStack() },
+        onCloseClicked = { navController.popBackStack() }
     )
 }
 
@@ -89,6 +111,7 @@ private fun ScreenContent(
     chanceInPercentInput: Int,
     rewardIconKeySelection: IconKey,
     showRewardIconSelectionDialog: Boolean,
+    showDeleteRewardConfirmationDialog: Boolean,
     actions: AddEditRewardScreenActions,
     onCloseClicked: () -> Unit,
 ) {
@@ -108,6 +131,30 @@ private fun ScreenContent(
                             contentDescription = stringResource(R.string.close)
                         )
                     }
+                },
+                actions = {
+                    if (isEditMode) {
+                        var expanded by remember { mutableStateOf(false) }
+                        Box {
+                            IconButton(onClick = { expanded = true }) {
+                                Icon(
+                                    Icons.Default.MoreVert,
+                                    contentDescription = stringResource(R.string.open_menu)
+                                )
+                            }
+                            DropdownMenu(
+                                expanded = expanded,
+                                onDismissRequest = { expanded = false }) {
+                                DropdownMenuItem(onClick = {
+                                    expanded = false
+                                    actions.onDeleteRewardClicked()
+                                }) {
+                                    Text(stringResource(R.string.delete_reward))
+                                }
+                            }
+
+                        }
+                    }
                 }
             )
         },
@@ -120,11 +167,9 @@ private fun ScreenContent(
                     Icons.Default.Check,
                     contentDescription = stringResource(R.string.save_reward)
                 )
-
             }
         },
-
-        ) {
+    ) {
         Column(Modifier.padding(16.dp)) {
             TextField(
                 value = rewardNameInput,
@@ -167,8 +212,28 @@ private fun ScreenContent(
     }
     if (showRewardIconSelectionDialog) {
         RewardIconSelectionDialog(
-            onDismissRequest = actions::onRewardIconDialogDismissRequest,
+            onDismissRequest = actions::onRewardIconDialogDismissed,
             onIconSelected = actions::onRewardIconSelected
+        )
+    }
+    if (showDeleteRewardConfirmationDialog) {
+        AlertDialog(onDismissRequest = actions::onDeleteRewardDialogDismissed,
+            title = {
+                Text(stringResource(R.string.confirm_deletion))
+            },
+            text = {
+                Text(stringResource(R.string.confirm_reward_deletion))
+            },
+            confirmButton = {
+                TextButton(onClick = actions::onDeleteRewardConfirmed) {
+                    Text(stringResource(R.string.delete))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = actions::onDeleteRewardDialogDismissed) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
         )
     }
 }
@@ -236,15 +301,19 @@ private fun RewardItemPreview() {
                 chanceInPercentInput = 10,
                 onCloseClicked = {},
                 showRewardIconSelectionDialog = false,
+                showDeleteRewardConfirmationDialog = false,
                 rewardIconKeySelection = defaultRewardIconKey,
                 actions = object : AddEditRewardScreenActions {
                     override fun onRewardNameInputChanged(input: String) {}
                     override fun onChangeInPercentInputChanged(input: Int) {}
                     override fun onRewardIconButtonClicked() {}
                     override fun onRewardIconSelected(iconKey: IconKey) {}
-                    override fun onRewardIconDialogDismissRequest() {}
+                    override fun onRewardIconDialogDismissed() {}
                     override fun onSaveClicked() {}
-                },
+                    override fun onDeleteRewardClicked() {}
+                    override fun onDeleteRewardConfirmed() {}
+                    override fun onDeleteRewardDialogDismissed() {}
+                }
             )
         }
     }

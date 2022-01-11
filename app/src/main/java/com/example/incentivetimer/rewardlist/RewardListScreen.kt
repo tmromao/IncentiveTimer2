@@ -27,10 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.incentivetimer.AddEditReward.ADD_EDIT_REWARD_RESULT
-import com.example.incentivetimer.AddEditReward.ARG_REWARD_ID
-import com.example.incentivetimer.AddEditReward.RESULT_REWARD_ADDED
-import com.example.incentivetimer.AddEditReward.RESULT_REWARD_UPDATED
+import com.example.incentivetimer.AddEditReward.*
 import com.example.incentivetimer.R
 import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.data.Reward
@@ -70,6 +67,10 @@ fun RewardListScreen(
                 }
                 RESULT_REWARD_UPDATED -> {
                     scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_updated))
+                }
+                RESULT_REWARD_DELETE -> {
+                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_deleted))
+
                 }
             }
 
