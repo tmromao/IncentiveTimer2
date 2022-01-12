@@ -11,6 +11,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -171,14 +173,22 @@ private fun ScreenContent(
         },
     ) {
         Column(Modifier.padding(16.dp)) {
+            val focusRequester = remember { FocusRequester() }
             TextField(
                 value = rewardNameInput,
                 onValueChange = actions::onRewardNameInputChanged,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester((focusRequester)),
                 label = { Text(stringResource(R.string.reward_name)) },
                 singleLine = true,
                 isError = rewardNameInputIsError,
-                modifier = Modifier.fillMaxWidth(),
             )
+            if (!isEditMode) {
+                LaunchedEffect(Unit) {
+                    focusRequester.requestFocus()
+                }
+            }
             if (rewardNameInputIsError) {
                 Text(
                     stringResource(R.string.field_cant_be_blank),
