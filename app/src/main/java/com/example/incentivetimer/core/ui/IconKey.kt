@@ -1,4 +1,4 @@
-package com.example.incentivetimer.ui
+package com.example.incentivetimer.core.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*

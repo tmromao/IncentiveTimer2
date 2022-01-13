@@ -3,8 +3,9 @@ package com.example.incentivetimer.data
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.incentivetimer.core.ui.IconKey
 import com.example.incentivetimer.di.ApplicationScope
-import com.example.incentivetimer.ui.IconKey
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject

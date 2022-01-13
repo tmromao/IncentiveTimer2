@@ -20,13 +20,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
+import com.example.incentivetimer.core.ui.IconKey
 import com.example.incentivetimer.core.ui.composables.ITIconButton
+import com.example.incentivetimer.core.ui.defaultRewardIconKey
 import com.example.incentivetimer.core.util.exhaustive
 
-import com.example.incentivetimer.ui.IconKey
-import com.example.incentivetimer.ui.defaultRewardIconKey
 
-import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+
+import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.flow.collect

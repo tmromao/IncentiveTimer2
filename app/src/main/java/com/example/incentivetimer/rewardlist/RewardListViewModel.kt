@@ -10,9 +10,7 @@ import javax.inject.Inject
 class RewardListViewModel @Inject constructor(
     private val rewardDao: RewardDao,
 ) : ViewModel() {
-
     val rewards = rewardDao.getAllRewards().asLiveData()
-
  /*   private val dummyRewardsLiveData = MutableLiveData<List<Reward>>()
     val dummyRewards: LiveData<List<Reward>> = dummyRewardsLiveData
 

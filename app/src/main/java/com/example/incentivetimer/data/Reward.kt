@@ -3,7 +3,7 @@ package com.example.incentivetimer.data
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.incentivetimer.ui.IconKey
+import com.example.incentivetimer.core.ui.IconKey
 import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "rewards")

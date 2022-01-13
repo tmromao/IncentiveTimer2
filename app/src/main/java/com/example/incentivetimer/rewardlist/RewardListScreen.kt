@@ -30,10 +30,11 @@ import androidx.navigation.NavController
 import com.example.incentivetimer.AddEditReward.*
 import com.example.incentivetimer.R
 import com.example.incentivetimer.application.FullScreenDestinations
+import com.example.incentivetimer.core.ui.IconKey
 import com.example.incentivetimer.data.Reward
-import com.example.incentivetimer.ui.IconKey
-import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
-import com.example.incentivetimer.ui.theme.ListBottomPadding
+
+import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.core.ui.theme.ListBottomPadding
 import kotlinx.coroutines.launch
 import logcat.logcat
 

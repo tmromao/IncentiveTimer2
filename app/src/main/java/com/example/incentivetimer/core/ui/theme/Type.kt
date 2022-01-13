@@ -1,4 +1,4 @@
-package com.example.incentivetimer.ui.theme
+package com.example.incentivetimer.core.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

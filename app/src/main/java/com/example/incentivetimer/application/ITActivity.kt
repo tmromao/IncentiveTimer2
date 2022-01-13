@@ -31,9 +31,10 @@ import com.example.incentivetimer.AddEditReward.NO_REWARD_ID
 import com.example.incentivetimer.R
 import com.example.incentivetimer.rewardlist.RewardListScreen
 import com.example.incentivetimer.timer.TimerScreen
-import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 
 import dagger.hilt.android.AndroidEntryPoint
+import logcat.logcat
 
 @ExperimentalAnimationApi
 @AndroidEntryPoint
@@ -58,10 +59,13 @@ private fun ScreenContent() {
 
 
     Scaffold(
+
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
+
+          //  logcat("ITActivity") { "route = ${currentDestination?.route}"}
 
             if (hideBottomBar == null || !hideBottomBar) {
                 BottomNavigation {
@@ -100,7 +104,9 @@ private fun ScreenContent() {
         NavHost(
             navController = navController,
             startDestination = bottomNavDestinations[0].route,
-            Modifier.padding(innerPadding).padding(bottom = bottomBarHeight.dp),
+            Modifier
+                .padding(innerPadding)
+                .padding(bottom = bottomBarHeight.dp),
 
             ) {
             composable(BottomNavDestination.TimerScreen.route) {

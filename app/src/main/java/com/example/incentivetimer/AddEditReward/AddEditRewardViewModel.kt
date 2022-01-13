@@ -2,10 +2,11 @@ package com.example.incentivetimer.AddEditReward
 
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.incentivetimer.core.ui.IconKey
+import com.example.incentivetimer.core.ui.defaultRewardIconKey
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.data.RewardDao
-import com.example.incentivetimer.ui.IconKey
-import com.example.incentivetimer.ui.defaultRewardIconKey
+
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow

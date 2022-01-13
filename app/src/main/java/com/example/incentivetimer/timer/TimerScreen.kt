@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
-import com.example.incentivetimer.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 
 @Composable
 fun TimerScreen(navController: NavController,) {
