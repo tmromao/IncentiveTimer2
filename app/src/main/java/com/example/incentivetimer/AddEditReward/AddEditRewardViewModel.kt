@@ -4,6 +4,8 @@ import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.incentivetimer.core.ui.IconKey
 import com.example.incentivetimer.core.ui.defaultRewardIconKey
+import com.example.incentivetimer.core.ui.screenspecs.AddEditRewardScreenSpec
+import com.example.incentivetimer.core.ui.screenspecs.NO_REWARD_ID
 import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.data.RewardDao
 
@@ -20,11 +22,8 @@ class AddEditRewardViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ViewModel(), AddEditRewardScreenActions {
 
-    private companion object {
-        const val KEY_REWARD_LIVE_DATA = "KEY_REWARD_LIVE_DATA"
-    }
+    private val rewardId = AddEditRewardScreenSpec.getRewardIdFromSavedStateHandle(savedStateHandle)
 
-    private val rewardId = savedStateHandle.get<Long>(ARG_REWARD_ID)
     //Assuming Reward is Parcelable
     private val rewardLiveData = savedStateHandle.getLiveData<Reward>(KEY_REWARD_LIVE_DATA)
 
@@ -63,43 +62,9 @@ class AddEditRewardViewModel @Inject constructor(
                 rewardLiveData.value =
                     Reward(name = "", changeInPercent = 10, iconKey = defaultRewardIconKey)
             }
-            /*if (rewardId != null && rewardId != NO_REWARD_ID) {
-                viewModelScope.launch {
-                    reward = rewardDao.getRewardById(rewardId)
-                    populateEmptyInputValuesWithRewardData()
-                }
-            } else {
-                populateInputValuesWithDefaultValues()
-            }*/
+
         }
     }
-
-    /*  private fun populateEmptyInputValuesWithRewardData() {
-          val reward = this.reward
-          if (reward != null) {
-              if (rewardNameInputLiveData.value == null) {
-                  rewardNameInputLiveData.value = reward.name
-              }
-              if (chanceInPercentInputLiveData.value == null) {
-                  chanceInPercentInputLiveData.value = reward.changeInPercent
-              }
-              if (rewardIconKeySelectionLiveData.value == null) {
-                  rewardIconKeySelectionLiveData.value = reward.iconKey
-              }
-          }
-      }
-
-      private fun populateInputValuesWithDefaultValues() {
-          if (rewardNameInputLiveData.value == null) {
-              rewardNameInputLiveData.value = ""
-          }
-          if (chanceInPercentInputLiveData.value == null) {
-              chanceInPercentInputLiveData.value = 10
-          }
-          if (rewardIconKeySelectionLiveData.value == null) {
-              rewardIconKeySelectionLiveData.value = defaultRewardIconKey
-          }
-      }*/
 
     sealed class AddEditRewardEvent {
         object RewardCreated : AddEditRewardEvent()
@@ -175,8 +140,10 @@ class AddEditRewardViewModel @Inject constructor(
     }
 }
 
-const val ARG_REWARD_ID = "rewardId"
-const val NO_REWARD_ID = -1L
+/*const val ARG_REWARD_ID = "rewardId"
+const val NO_REWARD_ID = -1L*/
+
+private const val KEY_REWARD_LIVE_DATA = "KEY_REWARD_LIVE_DATA"
 
 const val ADD_EDIT_REWARD_RESULT = "ADD_EDIT_REWARD_RESULT"
 const val RESULT_REWARD_ADDED = "RESULT_REWARD_ADDED"

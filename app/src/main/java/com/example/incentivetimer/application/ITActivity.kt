@@ -25,9 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.incentivetimer.AddEditReward.ARG_REWARD_ID
 import com.example.incentivetimer.AddEditReward.AddEditRewardScreen
-import com.example.incentivetimer.AddEditReward.NO_REWARD_ID
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.screenspecs.AddEditRewardScreenSpec
 import com.example.incentivetimer.core.ui.screenspecs.RewardListScreenSpec
@@ -48,7 +46,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             IncentiveTimerTheme {
                 ScreenContent()
-
             }
         }
     }
@@ -59,17 +56,22 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun ScreenContent() {
     val navController = rememberNavController()
-    var bottomBarHeight by remember { mutableStateOf(0) }
+    //var bottomBarHeight by remember { mutableStateOf(0) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
+    val appBarTitle = ScreenSpec.allScreens[currentDestination?.route]?.getScreenTitle(navBackStackEntry)
 
     Scaffold(
-
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(stringResource(appBarTitle ?: R.string.app_name))
+                }
+            )
+        },
         bottomBar = {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
-
-            //  logcat("ITActivity") { "route = ${currentDestination?.route}"}
 
             if (hideBottomBar == null || !hideBottomBar) {
                 BottomNavigation {
@@ -87,9 +89,9 @@ private fun ScreenContent() {
                                 )
                             },
                             alwaysShowLabel = false,
-                            selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.screenSpec.route } == true,
+                            selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.screenSpec.navHostRoute } == true,
                             onClick = {
-                                navController.navigate(bottomNavDestination.screenSpec.route) {
+                                navController.navigate(bottomNavDestination.screenSpec.navHostRoute) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
@@ -106,14 +108,12 @@ private fun ScreenContent() {
         ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = bottomNavDestinations[0].screenSpec.route,
-            Modifier
-                .padding(innerPadding)
-                .padding(bottom = bottomBarHeight.dp),
+            startDestination = bottomNavDestinations[0].screenSpec.navHostRoute,
+            modifier = Modifier.padding(innerPadding)
         ) {
-            ScreenSpec.allScreens.forEach { screen ->
+            ScreenSpec.allScreens.values.forEach { screen ->
                 composable(
-                    route = screen.route,
+                    route = screen.navHostRoute,
                     arguments = screen.arguments,
                     deepLinks = screen.deepLinks,
                 ) { navBackStackEntry ->
@@ -148,11 +148,11 @@ sealed class BottomNavDestination(
         )
 }
 
-sealed class FullScreenDestinations(
+/*sealed class FullScreenDestinations(
     val screenSpec: ScreenSpec,
 ) {
     object AddEditRewardScreen : FullScreenDestinations(screenSpec = AddEditRewardScreenSpec)
-}
+}*/
 
 const val ARG_HIDE_BOTTOM_BAR = "ARG_HIDE_BOTTOM_BAR"
 

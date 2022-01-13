@@ -29,8 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.AddEditReward.*
 import com.example.incentivetimer.R
-import com.example.incentivetimer.application.FullScreenDestinations
 import com.example.incentivetimer.core.ui.IconKey
+import com.example.incentivetimer.core.ui.screenspecs.AddEditRewardScreenSpec
 import com.example.incentivetimer.data.Reward
 
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
@@ -58,7 +58,7 @@ fun RewardListScreen(
     val context = LocalContext.current
 
     LaunchedEffect(key1 = addEditRewardResult) {
-        logcat{"LaunchedEffect called"}
+        logcat { "LaunchedEffect called" }
         navController.currentBackStackEntry?.savedStateHandle?.remove<String>(ADD_EDIT_REWARD_RESULT)
 
         addEditRewardResult?.value?.let { addEditRewardResult ->
@@ -80,12 +80,14 @@ fun RewardListScreen(
 
     //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
     //ScreenContent(dummyRewards)
-    ScreenContent(rewards = rewards,
-        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.screenSpec.route) },
+    ScreenContent(
+        rewards = rewards,
+        onAddNewRewardClicked = { navController.navigate(AddEditRewardScreenSpec.buildRoute()) },
         onRewardItemClicked = { id ->
-            navController.navigate(FullScreenDestinations.AddEditRewardScreen.screenSpec.route + "?$ARG_REWARD_ID=$id")
+            navController.navigate(AddEditRewardScreenSpec.buildRoute(id))
         },
-    scaffoldState = scaffoldState)
+        scaffoldState = scaffoldState
+    )
 }
 
 @ExperimentalAnimationApi
@@ -252,7 +254,7 @@ private fun ScreenContentPreview() {
                 onAddNewRewardClicked = {},
                 onRewardItemClicked = {},
 
-            )
+                )
         }
     }
 }
