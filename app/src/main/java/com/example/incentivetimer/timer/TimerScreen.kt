@@ -20,7 +20,7 @@ import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 
 @Composable
-fun TimerScreen(navController: NavController,) {
+fun TimerScreen(navController: NavController) {
     ScreenContent()
 }
 
@@ -28,11 +28,7 @@ fun TimerScreen(navController: NavController,) {
 private fun ScreenContent() {
 
     Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(stringResource(R.string.timer))
-            })
-        }
+
     ) {
         Box(
             modifier = Modifier

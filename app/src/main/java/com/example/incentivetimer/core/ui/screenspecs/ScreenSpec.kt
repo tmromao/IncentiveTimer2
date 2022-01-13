@@ -20,11 +20,14 @@ sealed interface ScreenSpec {
 
     val navHostRoute: String
 
-    @StringRes
-    fun getScreenTitle(navBackStackEntry: NavBackStackEntry?): Int
+   /* @StringRes
+    fun getScreenTitle(navBackStackEntry: NavBackStackEntry?): Int*/
 
     val arguments: List<NamedNavArgument> get() = emptyList()
     val deepLinks: List<NavDeepLink> get() = emptyList()
+
+    @Composable
+    fun TopBar()
 
     @Composable
     fun Content(

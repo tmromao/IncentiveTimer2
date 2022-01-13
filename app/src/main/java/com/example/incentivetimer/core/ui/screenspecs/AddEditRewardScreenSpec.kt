@@ -30,9 +30,13 @@ object AddEditRewardScreenSpec : ScreenSpec {
     fun getRewardIdFromSavedStateHandle(savedStateHandle: SavedStateHandle) =
         savedStateHandle.get<Long>(ARG_REWARD_ID)
 
-    override fun getScreenTitle(navBackStackEntry: NavBackStackEntry?): Int {
+  /*  override fun getScreenTitle(navBackStackEntry: NavBackStackEntry?): Int {
         val rewardId = navBackStackEntry?.arguments?.getLong(ARG_REWARD_ID)
         return if(isEditMode(rewardId)) R.string.edit_reward else R.string.add_reward
+    }*/
+
+    @Composable
+    override fun TopBar() {
     }
 
     @Composable

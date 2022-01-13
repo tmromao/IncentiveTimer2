@@ -104,11 +104,7 @@ private fun ScreenContent(
          dummyRewards += Reward(icon = Icons.Default.Star, title = "Item $index", index)
      }*/
     Scaffold(
-        topBar = {
-            TopAppBar(title = {
-                Text(stringResource(R.string.reward_list))
-            })
-        },
+
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddNewRewardClicked,

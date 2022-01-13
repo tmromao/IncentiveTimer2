@@ -60,15 +60,11 @@ private fun ScreenContent() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val appBarTitle = ScreenSpec.allScreens[currentDestination?.route]?.getScreenTitle(navBackStackEntry)
+    val screenSpec = ScreenSpec.allScreens[currentDestination?.route]
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(stringResource(appBarTitle ?: R.string.app_name))
-                }
-            )
+            screenSpec?.TopBar()
         },
         bottomBar = {
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
