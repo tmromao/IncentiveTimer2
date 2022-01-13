@@ -69,7 +69,7 @@ private fun ScreenContent() {
             val currentDestination = navBackStackEntry?.destination
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
 
-          //  logcat("ITActivity") { "route = ${currentDestination?.route}"}
+            //  logcat("ITActivity") { "route = ${currentDestination?.route}"}
 
             if (hideBottomBar == null || !hideBottomBar) {
                 BottomNavigation {
@@ -100,7 +100,6 @@ private fun ScreenContent() {
                         )
                     }
                 }//BottomNavigation
-
             }
         },
 
@@ -111,24 +110,18 @@ private fun ScreenContent() {
             Modifier
                 .padding(innerPadding)
                 .padding(bottom = bottomBarHeight.dp),
-
-            ) {
-            composable(BottomNavDestination.TimerScreen.screenSpec.route) {
-                TimerScreen(navController)
-            }
-            composable(BottomNavDestination.RewardListScreen.screenSpec.route) {
-                RewardListScreen(navController)
-            }
-            composable(
-                FullScreenDestinations.AddEditRewardScreen.screenSpec.route + "?$ARG_REWARD_ID={$ARG_REWARD_ID}",
-                arguments = listOf(navArgument(ARG_REWARD_ID) {
-                    defaultValue = NO_REWARD_ID
-                }, navArgument(ARG_HIDE_BOTTOM_BAR) {
-                    defaultValue = true
+        ) {
+            ScreenSpec.allScreens.forEach { screen ->
+                composable(
+                    route = screen.route,
+                    arguments = screen.arguments,
+                    deepLinks = screen.deepLinks,
+                ) { navBackStackEntry ->
+                    screen.Content(
+                        navController = navController,
+                        navBackStackEntry = navBackStackEntry
+                    )
                 }
-                )
-            ) {
-                AddEditRewardScreen(navController)
             }
         }
     }
@@ -144,9 +137,15 @@ sealed class BottomNavDestination(
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    object TimerScreen : BottomNavDestination(screenSpec = TimerScreenSpec, Icons.Outlined.Timer, R.string.timer)
+    object TimerScreen :
+        BottomNavDestination(screenSpec = TimerScreenSpec, Icons.Outlined.Timer, R.string.timer)
+
     object RewardListScreen :
-        BottomNavDestination(screenSpec = RewardListScreenSpec, Icons.Outlined.List, R.string.reward_list)
+        BottomNavDestination(
+            screenSpec = RewardListScreenSpec,
+            Icons.Outlined.List,
+            R.string.reward_list
+        )
 }
 
 sealed class FullScreenDestinations(

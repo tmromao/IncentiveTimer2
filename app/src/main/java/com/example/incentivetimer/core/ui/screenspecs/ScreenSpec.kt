@@ -10,14 +10,14 @@ sealed interface ScreenSpec {
 
     companion object {
         val allScreens = listOf<ScreenSpec>(
-
+            TimerScreenSpec,
+            RewardListScreenSpec,
+            AddEditRewardScreenSpec,
         )
     }
 
     val route: String
-
     val arguments: List<NamedNavArgument> get() = emptyList()
-
     val deepLinks: List<NavDeepLink> get() = emptyList()
 
     @Composable
