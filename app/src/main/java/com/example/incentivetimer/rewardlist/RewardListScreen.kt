@@ -81,9 +81,9 @@ fun RewardListScreen(
     //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
     //ScreenContent(dummyRewards)
     ScreenContent(rewards = rewards,
-        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.route) },
+        onAddNewRewardClicked = { navController.navigate(FullScreenDestinations.AddEditRewardScreen.screenSpec.route) },
         onRewardItemClicked = { id ->
-            navController.navigate(FullScreenDestinations.AddEditRewardScreen.route + "?$ARG_REWARD_ID=$id")
+            navController.navigate(FullScreenDestinations.AddEditRewardScreen.screenSpec.route + "?$ARG_REWARD_ID=$id")
         },
     scaffoldState = scaffoldState)
 }

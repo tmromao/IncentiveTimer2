@@ -29,6 +29,10 @@ import com.example.incentivetimer.AddEditReward.ARG_REWARD_ID
 import com.example.incentivetimer.AddEditReward.AddEditRewardScreen
 import com.example.incentivetimer.AddEditReward.NO_REWARD_ID
 import com.example.incentivetimer.R
+import com.example.incentivetimer.core.ui.screenspecs.AddEditRewardScreenSpec
+import com.example.incentivetimer.core.ui.screenspecs.RewardListScreenSpec
+import com.example.incentivetimer.core.ui.screenspecs.ScreenSpec
+import com.example.incentivetimer.core.ui.screenspecs.TimerScreenSpec
 import com.example.incentivetimer.rewardlist.RewardListScreen
 import com.example.incentivetimer.timer.TimerScreen
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
@@ -83,9 +87,9 @@ private fun ScreenContent() {
                                 )
                             },
                             alwaysShowLabel = false,
-                            selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.route } == true,
+                            selected = currentDestination?.hierarchy?.any { it.route == bottomNavDestination.screenSpec.route } == true,
                             onClick = {
-                                navController.navigate(bottomNavDestination.route) {
+                                navController.navigate(bottomNavDestination.screenSpec.route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
                                         saveState = true
                                     }
@@ -103,20 +107,20 @@ private fun ScreenContent() {
         ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = bottomNavDestinations[0].route,
+            startDestination = bottomNavDestinations[0].screenSpec.route,
             Modifier
                 .padding(innerPadding)
                 .padding(bottom = bottomBarHeight.dp),
 
             ) {
-            composable(BottomNavDestination.TimerScreen.route) {
+            composable(BottomNavDestination.TimerScreen.screenSpec.route) {
                 TimerScreen(navController)
             }
-            composable(BottomNavDestination.RewardListScreen.route) {
+            composable(BottomNavDestination.RewardListScreen.screenSpec.route) {
                 RewardListScreen(navController)
             }
             composable(
-                FullScreenDestinations.AddEditRewardScreen.route + "?$ARG_REWARD_ID={$ARG_REWARD_ID}",
+                FullScreenDestinations.AddEditRewardScreen.screenSpec.route + "?$ARG_REWARD_ID={$ARG_REWARD_ID}",
                 arguments = listOf(navArgument(ARG_REWARD_ID) {
                     defaultValue = NO_REWARD_ID
                 }, navArgument(ARG_HIDE_BOTTOM_BAR) {
@@ -136,19 +140,19 @@ val bottomNavDestinations = listOf<BottomNavDestination>(
 )
 
 sealed class BottomNavDestination(
-    val route: String,
+    val screenSpec: ScreenSpec,
     val icon: ImageVector,
     @StringRes val label: Int
 ) {
-    object TimerScreen : BottomNavDestination(route = "timer", Icons.Outlined.Timer, R.string.timer)
+    object TimerScreen : BottomNavDestination(screenSpec = TimerScreenSpec, Icons.Outlined.Timer, R.string.timer)
     object RewardListScreen :
-        BottomNavDestination(route = "reward_list", Icons.Outlined.List, R.string.reward_list)
+        BottomNavDestination(screenSpec = RewardListScreenSpec, Icons.Outlined.List, R.string.reward_list)
 }
 
 sealed class FullScreenDestinations(
-    val route: String,
+    val screenSpec: ScreenSpec,
 ) {
-    object AddEditRewardScreen : FullScreenDestinations(route = "add_edit_screen")
+    object AddEditRewardScreen : FullScreenDestinations(screenSpec = AddEditRewardScreenSpec)
 }
 
 const val ARG_HIDE_BOTTOM_BAR = "ARG_HIDE_BOTTOM_BAR"
