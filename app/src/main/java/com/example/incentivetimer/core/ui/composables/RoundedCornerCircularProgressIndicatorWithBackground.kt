@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.core.ui.theme.PrimaryLightAlpha
 
 @Composable
 fun RoundedCornerCircularProgressIndicatorWithBackground(
@@ -31,7 +32,7 @@ fun RoundedCornerCircularProgressIndicatorWithBackground(
     progress: Float,
     modifier: Modifier = Modifier,
     foregroundColor: Color = MaterialTheme.colors.primary,
-    backgroundColor: Color = MaterialTheme.colors.primary.copy(alpha = .25f),
+    backgroundColor: Color = MaterialTheme.colors.primary.copy(alpha = PrimaryLightAlpha),
     strokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth
 ) {
     Box(modifier) {
@@ -50,6 +51,7 @@ fun RoundedCornerCircularProgressIndicatorWithBackground(
         )
     }
 }
+
 @Preview(
     name = "Light mode",
     uiMode = Configuration.UI_MODE_NIGHT_NO

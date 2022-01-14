@@ -139,16 +139,10 @@ sealed class BottomNavDestination(
     object RewardListScreen :
         BottomNavDestination(
             screenSpec = RewardListScreenSpec,
-            Icons.Outlined.List,
+            Icons.Outlined.Star,
             R.string.reward_list
         )
 }
-
-/*sealed class FullScreenDestinations(
-    val screenSpec: ScreenSpec,
-) {
-    object AddEditRewardScreen : FullScreenDestinations(screenSpec = AddEditRewardScreenSpec)
-}*/
 
 const val ARG_HIDE_BOTTOM_BAR = "ARG_HIDE_BOTTOM_BAR"
 

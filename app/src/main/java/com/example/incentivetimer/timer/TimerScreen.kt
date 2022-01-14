@@ -4,14 +4,18 @@ import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +24,7 @@ import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.composables.RoundedCornerCircularProgressIndicator
 import com.example.incentivetimer.core.ui.composables.RoundedCornerCircularProgressIndicatorWithBackground
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.core.ui.theme.PrimaryLightAlpha
 
 interface TimerScreenActions {
 
@@ -68,7 +73,20 @@ private fun Timer(
                 .scale(scaleX = -1f, scaleY = 1f),
             strokeWidth = 16.dp
         )
-        Text(text = "25:00", style = MaterialTheme.typography.h4)
+        Column {
+            Box(Modifier.background(Color.Green)) {
+                Text(
+                    text = "25:00",
+                    style = MaterialTheme.typography.h4,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+                PomodorosCompletedIndicatorRow(
+                    pomodorosCompleted = 3, modifier = Modifier.align(
+                        Alignment.BottomStart
+                    )
+                )
+            }
+        }
     }
 }
 
@@ -92,6 +110,39 @@ private fun TimerStartStopButton(
                 .padding(4.dp),
         )
     }
+}
+
+@Composable
+private fun PomodorosCompletedIndicatorRow(
+    pomodorosCompleted: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier) {
+        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 0)
+        Spacer(modifier = Modifier.width(4.dp))
+        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 1)
+        Spacer(modifier = Modifier.width(4.dp))
+        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 2)
+        Spacer(modifier = Modifier.width(4.dp))
+        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 3)
+
+    }
+}
+
+@Composable
+private fun SinglePomodoroCompletedIndicator(
+    completed: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val color =
+        if (!completed) MaterialTheme.colors.primary.copy(alpha = PrimaryLightAlpha) else MaterialTheme.colors.primary
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .size(8.dp)
+            .background(color)
+    )
+
 }
 
 @Preview(
