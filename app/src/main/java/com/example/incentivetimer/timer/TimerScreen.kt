@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -19,6 +20,7 @@ import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.composables.RoundedCornerCircularProgressIndicator
@@ -27,25 +29,65 @@ import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 import com.example.incentivetimer.core.ui.theme.PrimaryLightAlpha
 
 interface TimerScreenActions {
-
+    fun onResetTimerClicked()
+    fun onResetPomodoroSetClicked()
 }
 
-@Composable
-fun TimerScreen(navController: NavController) {
+/*@Composable
+fun TimerScreen(
+    navController: NavController,
+) {
+    val viewModel: TimerViewModel = hiltViewModel()
     val timerRunning = true
-    ScreenContent(timerRunning = timerRunning)
+    ScreenContent(
+        timerRunning = timerRunning,
+        actions = viewModel,
+    )
+}*/
+
+@Composable
+fun TimerScreenAppBar(
+    actions: TimerScreenActions,
+) {
+    TopAppBar(
+        title = {
+            Text(stringResource(R.string.timer))
+        },
+        actions = {
+            Box {
+                var expanded by remember { mutableStateOf(false) }
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        contentDescription = stringResource(R.string.open_menu)
+                    )
+                }
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }) {
+                    DropdownMenuItem(onClick = {
+                        expanded = false
+                        actions.onResetTimerClicked()
+                    }) {
+                        Text(stringResource(R.string.reset_timer))
+                    }
+                    DropdownMenuItem(onClick = {
+                        expanded = false
+                        actions.onResetPomodoroSetClicked()
+                    }) {
+                        Text(stringResource(R.string.reset_pomodoro_set))
+                    }
+                }
+
+            }
+        }
+    )
 }
 
 @Composable
-fun TimerScreenAppBar() {
-    TopAppBar(title = {
-        Text(stringResource(R.string.timer))
-    })
-}
-
-@Composable
-private fun ScreenContent(
+fun TimerScreenContent(
     timerRunning: Boolean,
+    actions: TimerScreenActions,
 ) {
     Scaffold() {
         Column(
@@ -57,7 +99,6 @@ private fun ScreenContent(
             Spacer(Modifier.height(48.dp))
             TimerStartStopButton(timerRunning = timerRunning)
         }
-
     }
 }
 
@@ -158,7 +199,12 @@ private fun SinglePomodoroCompletedIndicator(
 private fun ScreenContentPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            ScreenContent(timerRunning = true)
+            TimerScreenContent(timerRunning = true,
+                actions = object : TimerScreenActions {
+                    override fun onResetTimerClicked() {}
+                    override fun onResetPomodoroSetClicked() {}
+                }
+            )
         }
     }
 }

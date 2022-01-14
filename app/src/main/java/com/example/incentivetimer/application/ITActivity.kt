@@ -25,14 +25,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.incentivetimer.AddEditReward.AddEditRewardScreen
 import com.example.incentivetimer.R
 import com.example.incentivetimer.core.ui.screenspecs.AddEditRewardScreenSpec
 import com.example.incentivetimer.core.ui.screenspecs.RewardListScreenSpec
 import com.example.incentivetimer.core.ui.screenspecs.ScreenSpec
 import com.example.incentivetimer.core.ui.screenspecs.TimerScreenSpec
-import com.example.incentivetimer.rewardlist.RewardListScreen
-import com.example.incentivetimer.timer.TimerScreen
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,7 +53,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun ScreenContent() {
     val navController = rememberNavController()
-    //var bottomBarHeight by remember { mutableStateOf(0) }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -64,7 +60,13 @@ private fun ScreenContent() {
 
     Scaffold(
         topBar = {
-            screenSpec?.TopBar()
+            val navBackStackEntry = navBackStackEntry
+            if(navBackStackEntry != null) {
+                screenSpec?.TopBar(
+                    navController = navController,
+                    navBackStackEntry = navBackStackEntry
+                )
+            }
         },
         bottomBar = {
             val hideBottomBar = navBackStackEntry?.arguments?.getBoolean(ARG_HIDE_BOTTOM_BAR)
@@ -139,7 +141,7 @@ sealed class BottomNavDestination(
     object RewardListScreen :
         BottomNavDestination(
             screenSpec = RewardListScreenSpec,
-            Icons.Outlined.Star,
+            Icons.Outlined.Timer,
             R.string.reward_list
         )
 }

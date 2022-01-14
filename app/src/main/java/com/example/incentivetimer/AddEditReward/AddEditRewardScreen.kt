@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -24,7 +23,6 @@ import com.example.incentivetimer.core.ui.IconKey
 import com.example.incentivetimer.core.ui.composables.ITIconButton
 import com.example.incentivetimer.core.ui.defaultRewardIconKey
 import com.example.incentivetimer.core.util.exhaustive
-
 
 
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
@@ -47,67 +45,56 @@ interface AddEditRewardScreenActions {
 
 
 @Composable
-fun AddEditRewardScreen(
-    navController: NavController,
-) {
-    val viewModel: AddEditRewardViewModel = hiltViewModel()
-    val isEditMode = viewModel.isEditMode
-    val rewardNameInput by viewModel.rewardNameInput.observeAsState("")
+fun AddEditRewardScreenAppBar(
+    isEditMode: Boolean,
+    onCloseClicked: () -> Unit,
+    actions: AddEditRewardScreenActions
+){
+    val appBarTitle =
+        stringResource(if (isEditMode) R.string.edit_reward else R.string.add_reward)
 
-    val rewardNameInputIsError by viewModel.rewardNameInputIsError.observeAsState(false)
+    TopAppBar(
+        title = {
+            Text(appBarTitle)
+        },
+        navigationIcon = {
+            IconButton(onClick = onCloseClicked) {
+                Icon(
+                    Icons.Default.Close,
+                    contentDescription = stringResource(R.string.close)
+                )
+            }
+        },
+        actions = {
+            if (isEditMode) {
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.open_menu)
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(onClick = {
+                            expanded = false
+                            actions.onDeleteRewardClicked()
+                        }) {
+                            Text(stringResource(R.string.delete_reward))
+                        }
+                    }
 
-    val changeInPercentInput by viewModel.chanceInPercentInput.observeAsState(10)
-    val rewardIconKeySelection by viewModel.rewardIconKeySelection.observeAsState(initial = defaultRewardIconKey)
-    val showRewardIconSelectionDialog by viewModel.showRewardIconSelectionDialog.observeAsState(
-        false
-    )
-    val showDeleteRewardConfirmationDialog by viewModel.showDeleteRewardConfirmationDialog.observeAsState(
-        false
-    )
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
-            when (event) {
-                AddEditRewardViewModel.AddEditRewardEvent.RewardCreated -> {
-                    keyboardController?.hide()
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_ADDED
-                    )
-                    navController.popBackStack()
                 }
-                AddEditRewardViewModel.AddEditRewardEvent.RewardUpdated -> {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_UPDATED
-                    )
-                    navController.popBackStack()
-                }
-                AddEditRewardViewModel.AddEditRewardEvent.RewardDeleted -> {
-                    navController.previousBackStackEntry?.savedStateHandle?.set(
-                        ADD_EDIT_REWARD_RESULT, RESULT_REWARD_DELETE
-                    )
-                    navController.popBackStack()
-                }
-            }.exhaustive
+            }
         }
-    }
-
-    ScreenContent(
-        isEditMode = isEditMode,
-        rewardNameInput = rewardNameInput,
-        rewardNameInputIsError = rewardNameInputIsError,
-        chanceInPercentInput = changeInPercentInput,
-        rewardIconKeySelection = rewardIconKeySelection,
-        showRewardIconSelectionDialog = showRewardIconSelectionDialog,
-        showDeleteRewardConfirmationDialog = showDeleteRewardConfirmationDialog,
-        actions = viewModel,
-        onCloseClicked = { navController.popBackStack() }
     )
+
 }
 
 @Composable
-private fun ScreenContent(
+fun AddEditRewardScreenContent(
     isEditMode: Boolean,
     rewardNameInput: String,
     rewardNameInputIsError: Boolean,
@@ -116,51 +103,8 @@ private fun ScreenContent(
     showRewardIconSelectionDialog: Boolean,
     showDeleteRewardConfirmationDialog: Boolean,
     actions: AddEditRewardScreenActions,
-    onCloseClicked: () -> Unit,
 ) {
-
     Scaffold(
-        topBar = {
-            val appBarTitle =
-                stringResource(if (isEditMode) R.string.edit_reward else R.string.add_reward)
-            TopAppBar(
-                title = {
-                    Text(appBarTitle)
-                },
-                navigationIcon = {
-                    IconButton(onClick = onCloseClicked) {
-                        Icon(
-                            Icons.Default.Close,
-                            contentDescription = stringResource(R.string.close)
-                        )
-                    }
-                },
-                actions = {
-                    if (isEditMode) {
-                        var expanded by remember { mutableStateOf(false) }
-                        Box {
-                            IconButton(onClick = { expanded = true }) {
-                                Icon(
-                                    Icons.Default.MoreVert,
-                                    contentDescription = stringResource(R.string.open_menu)
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }) {
-                                DropdownMenuItem(onClick = {
-                                    expanded = false
-                                    actions.onDeleteRewardClicked()
-                                }) {
-                                    Text(stringResource(R.string.delete_reward))
-                                }
-                            }
-
-                        }
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = actions::onSaveClicked,
@@ -305,12 +249,11 @@ private fun RewardIconSelectionDialog(
 private fun RewardItemPreview() {
     IncentiveTimerTheme() {
         Surface {
-            ScreenContent(
+            AddEditRewardScreenContent(
                 isEditMode = false,
                 rewardNameInput = "Example reward",
                 rewardNameInputIsError = false,
                 chanceInPercentInput = 10,
-                onCloseClicked = {},
                 showRewardIconSelectionDialog = false,
                 showDeleteRewardConfirmationDialog = false,
                 rewardIconKeySelection = defaultRewardIconKey,

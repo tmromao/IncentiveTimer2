@@ -36,63 +36,16 @@ import com.example.incentivetimer.data.Reward
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 import com.example.incentivetimer.core.ui.theme.ListBottomPadding
 import kotlinx.coroutines.launch
-import logcat.logcat
 
-@ExperimentalAnimationApi
 @Composable
-fun RewardListScreen(
-    navController: NavController,
-    viewModel: RewardListViewModel = hiltViewModel()
-) {
-    val rewards by viewModel.rewards.observeAsState(listOf())
-
-    //TODO : 21/12/2021 Check if we can turn the result into a sealed class!
-    val addEditRewardResult =
-        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
-            ADD_EDIT_REWARD_RESULT
-        )?.observeAsState()
-
-    //ScaffoldState to display the snackbar. Notice it is "=" (not "by")
-    val scaffoldState = rememberScaffoldState()
-
-    val context = LocalContext.current
-
-    LaunchedEffect(key1 = addEditRewardResult) {
-        logcat { "LaunchedEffect called" }
-        navController.currentBackStackEntry?.savedStateHandle?.remove<String>(ADD_EDIT_REWARD_RESULT)
-
-        addEditRewardResult?.value?.let { addEditRewardResult ->
-            when (addEditRewardResult) {
-                RESULT_REWARD_ADDED -> {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_added))
-                }
-                RESULT_REWARD_UPDATED -> {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_updated))
-                }
-                RESULT_REWARD_DELETE -> {
-                    scaffoldState.snackbarHostState.showSnackbar(context.getString(R.string.reward_deleted))
-
-                }
-            }
-
-        }
-    }
-
-    //val dummyRewards by viewModel.dummyRewards.observeAsState(listOf())
-    //ScreenContent(dummyRewards)
-    ScreenContent(
-        rewards = rewards,
-        onAddNewRewardClicked = { navController.navigate(AddEditRewardScreenSpec.buildRoute()) },
-        onRewardItemClicked = { id ->
-            navController.navigate(AddEditRewardScreenSpec.buildRoute(id))
-        },
-        scaffoldState = scaffoldState
-    )
+fun RewardListScreenAppBar() {
+    TopAppBar(title = {
+        Text(stringResource(R.string.reward_list))
+    })
 }
 
-@ExperimentalAnimationApi
 @Composable
-private fun ScreenContent(
+fun RewardListScreenContent(
     rewards: List<Reward>,
     onRewardItemClicked: (Long) -> Unit,
     onAddNewRewardClicked: () -> Unit,
@@ -241,7 +194,7 @@ private fun RewardItemPreview() {
 private fun ScreenContentPreview() {
     IncentiveTimerTheme() {
         Surface() {
-            ScreenContent(
+            RewardListScreenContent(
                 listOf(
                     Reward(iconKey = IconKey.CAKE, name = "CAKE", 5),
                     Reward(iconKey = IconKey.BATH_TUB, name = "BATH_TUB", 15),
