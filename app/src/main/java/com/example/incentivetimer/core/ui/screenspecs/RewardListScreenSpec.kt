@@ -1,25 +1,23 @@
 package com.example.incentivetimer.core.ui.screenspecs
 
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.example.incentivetimer.AddEditReward.ADD_EDIT_REWARD_RESULT
-import com.example.incentivetimer.AddEditReward.RESULT_REWARD_ADDED
-import com.example.incentivetimer.AddEditReward.RESULT_REWARD_DELETE
-import com.example.incentivetimer.AddEditReward.RESULT_REWARD_UPDATED
+
 import com.example.incentivetimer.R
+import com.example.incentivetimer.features.AddEditReward.ADD_EDIT_REWARD_RESULT
+import com.example.incentivetimer.features.AddEditReward.RESULT_REWARD_ADDED
+import com.example.incentivetimer.features.AddEditReward.RESULT_REWARD_DELETE
+import com.example.incentivetimer.features.AddEditReward.RESULT_REWARD_UPDATED
 import com.example.incentivetimer.rewardlist.RewardListScreenAppBar
 import com.example.incentivetimer.rewardlist.RewardListScreenContent
-import com.example.incentivetimer.rewardlist.RewardListViewModel
+import com.example.incentivetimer.features.rewardlist.RewardListViewModel
 
 
 object RewardListScreenSpec : ScreenSpec {

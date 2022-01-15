@@ -1,4 +1,4 @@
-package com.example.incentivetimer.AddEditReward
+package com.example.incentivetimer.features.AddEditReward
 
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel

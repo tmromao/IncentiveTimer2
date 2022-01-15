@@ -1,4 +1,4 @@
-package com.example.incentivetimer.rewardlist
+package com.example.incentivetimer.features.rewardlist
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData

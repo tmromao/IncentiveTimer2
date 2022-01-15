@@ -26,23 +26,10 @@ import com.example.incentivetimer.core.util.exhaustive
 
 
 import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
+import com.example.incentivetimer.features.AddEditReward.AddEditRewardScreenActions
 import com.google.accompanist.flowlayout.FlowRow
 import com.google.accompanist.flowlayout.MainAxisAlignment
 import kotlinx.coroutines.flow.collect
-
-
-interface AddEditRewardScreenActions {
-    fun onRewardNameInputChanged(input: String)
-    fun onChangeInPercentInputChanged(input: Int)
-    fun onRewardIconButtonClicked()
-    fun onRewardIconSelected(iconKey: IconKey)
-    fun onRewardIconDialogDismissed()
-    fun onSaveClicked()
-    fun onDeleteRewardClicked()
-    fun onDeleteRewardConfirmed()
-    fun onDeleteRewardDialogDismissed()
-}
-
 
 @Composable
 fun AddEditRewardScreenAppBar(

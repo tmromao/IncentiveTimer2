@@ -1,14 +1,14 @@
 package com.example.incentivetimer.core.ui.screenspecs
 
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.example.incentivetimer.R
-import com.example.incentivetimer.timer.*
+import com.example.incentivetimer.features.timer.TimerScreenAppBar
+import com.example.incentivetimer.features.timer.TimerScreenContent
+import com.example.incentivetimer.features.timer.TimerViewModel
 
 object TimerScreenSpec : ScreenSpec {
     override val navHostRoute: String = "Timer"
@@ -22,8 +22,17 @@ object TimerScreenSpec : ScreenSpec {
     @Composable
     override fun Content(navController: NavController, navBackStackEntry: NavBackStackEntry) {
         val viewModel: TimerViewModel = hiltViewModel(navBackStackEntry)
-        val timerRunning = true
+        val timeLeftInMillis by viewModel.timeLeftInMillis.observeAsState(0L)
+        val currentTimeTargetInMillis by viewModel.currentTimeTargetInMillis.observeAsState(0L)
+        val timerRunning by viewModel.timerRunning.observeAsState(false)
+        val currentPhase by viewModel.currentPhase.observeAsState()
 
-        TimerScreenContent(timerRunning = timerRunning, actions = viewModel)
+        TimerScreenContent(
+            timeLeftInMillis = timeLeftInMillis,
+            currentTimeTargetInMillis = currentTimeTargetInMillis,
+            currentPhase = currentPhase,
+            timerRunning = timerRunning,
+            actions = viewModel,
+        )
     }
 }
