@@ -26,5 +26,6 @@
     <string name="reset_timer">Reset timer</string>
     <string name="reset_pomodoro_set">Reset Pomodoro set</string>
     <string name="pomodoro">Pomodoro</string>
-    <string name="break_">Break</string>
+    <string name="short_break">Short Break</string>
+    <string name="long_break">Long Break</string>
 </resources>

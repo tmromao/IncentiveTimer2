@@ -117,15 +117,18 @@ private fun Timer(
                     modifier = Modifier.align(Alignment.Center)
                 )
                 PomodorosCompletedIndicatorRow(
-                    pomodorosCompleted = 3, modifier = Modifier.align(
-                        Alignment.BottomStart
-                    )
+                    pomodorosCompleted = 3, modifier = Modifier
+                        .align(
+                            Alignment.BottomStart
+                        )
+                        .padding(top = 60.dp)
                 )
             }
             Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
                 val phaseText = when (currentPhase) {
                     PomodoroPhase.POMODORO -> stringResource(R.string.pomodoro).uppercase()
-                    PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> stringResource(R.string.break_).uppercase()
+                    PomodoroPhase.SHORT_BREAK -> stringResource(R.string.short_break).uppercase()
+                    PomodoroPhase.LONG_BREAK -> stringResource(R.string.long_break).uppercase()
                     null -> ""
                 }
                 Text(phaseText, Modifier.padding(top = 48.dp))
