@@ -1,12 +1,9 @@
 package com.example.incentivetimer.features.timer
 
 import android.os.CountDownTimer
-import androidx.lifecycle.LiveData
-import com.example.incentivetimer.core.util.exhaustive
 import com.example.incentivetimer.di.ApplicationScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
-import logcat.logcat
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -55,7 +52,11 @@ class PomodoroTimerManager @Inject constructor(
         }
     }
 
+    //TODO: 25/12/2021 Clean up this code and extract some logic into separate methods
+
     private fun startTimer() {
+
+        resetPomodoroCounterIfTargetReached()
         val timeLeftInMillis = timeLeftInMillisFlow.value
         countDownTimer = object : CountDownTimer(timeLeftInMillis, 1000L) {
             override fun onTick(millisUntilFinished: Long) {
@@ -76,26 +77,48 @@ class PomodoroTimerManager @Inject constructor(
 
     }
 
-    private fun startNextPhase() {
-        val currentPhase = currentPhaseFlow.value
+    private fun resetPomodoroCounterIfTargetReached() {
         val pomodorosCompleted = pomodorosCompletedFlow.value
         val pomodorosTarget = pomodorosTargetFlow.value
-
-        val nextPhase = when (currentPhase) {
-            PomodoroPhase.POMODORO -> if (pomodorosCompleted >= pomodorosTarget) PomodoroPhase.LONG_BREAK else PomodoroPhase.SHORT_BREAK
-            PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> PomodoroPhase.POMODORO
+        val currentPhase = currentPhaseFlow.value
+        if (pomodorosCompleted >= pomodorosTarget && currentPhase == PomodoroPhase.POMODORO) {
+            pomodorosCompletedFlow.value = 0
         }
+    }
+
+    private fun startNextPhase() {
+        val lastPhase = currentPhaseFlow.value
+        val pomodorosCompleted = if(lastPhase == PomodoroPhase.POMODORO) pomodorosCompletedFlow.value + 1 else pomodorosCompletedFlow.value
+        val pomodorosTarget = pomodorosTargetFlow.value
+        pomodorosCompletedFlow.value = pomodorosCompleted
+
+        val nextPhase = getNextPhase(
+            lastPhase = lastPhase,
+            pomodorosCompleted = pomodorosCompleted,
+            pomodorosTarget = pomodorosTarget
+        )
 
         currentPhaseFlow.value = nextPhase
-        val nextTimeTarget = when (nextPhase) {
-            PomodoroPhase.POMODORO -> POMODORO_DURATION_IN_MILLIS
-            PomodoroPhase.SHORT_BREAK -> SHORT_BREAK_DURATION_IN_MILLIS
-            PomodoroPhase.LONG_BREAK -> LONG_BREAK_DURATION_IN_MILLIS
-        }
-        currentTimeTargetInMillisFlow.value = nextTimeTarget
+        val nextTimeTarget = getTimeTargetForPhase(nextPhase)
+        currentTimeTargetInMillisFlow.value = getTimeTargetForPhase(nextPhase)
         timeLeftInMillisFlow.value = nextTimeTarget
         startTimer()
     }
 
+    private fun getNextPhase(
+        lastPhase: PomodoroPhase,
+        pomodorosCompleted: Int,
+        pomodorosTarget: Int
+    ): PomodoroPhase = when (lastPhase) {
+        PomodoroPhase.POMODORO -> if (pomodorosCompleted >= pomodorosTarget) PomodoroPhase.LONG_BREAK else PomodoroPhase.SHORT_BREAK
+        PomodoroPhase.SHORT_BREAK, PomodoroPhase.LONG_BREAK -> PomodoroPhase.POMODORO
+
+    }
+
+    private fun getTimeTargetForPhase(phase: PomodoroPhase): Long = when (phase) {
+        PomodoroPhase.POMODORO -> POMODORO_DURATION_IN_MILLIS
+        PomodoroPhase.SHORT_BREAK -> SHORT_BREAK_DURATION_IN_MILLIS
+        PomodoroPhase.LONG_BREAK -> LONG_BREAK_DURATION_IN_MILLIS
+    }
 
 }

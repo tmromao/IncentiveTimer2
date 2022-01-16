@@ -68,6 +68,7 @@ fun TimerScreenContent(
     timeLeftInMillis: Long,
     currentTimeTargetInMillis: Long,
     currentPhase: PomodoroPhase?,
+    pomodorosCompleted: Int,
     timerRunning: Boolean,
     actions: TimerScreenActions,
 ) {
@@ -78,9 +79,10 @@ fun TimerScreenContent(
             verticalArrangement = Arrangement.Center,
         ) {
             Timer(
-                timeLeftInMillis,
+                timeLeftInMillis = timeLeftInMillis,
                 currentTimeTargetInMillis = currentTimeTargetInMillis,
                 currentPhase = currentPhase,
+                pomodorosCompleted = pomodorosCompleted,
             )
             Spacer(Modifier.height(48.dp))
             TimerStartStopButton(
@@ -96,6 +98,7 @@ private fun Timer(
     timeLeftInMillis: Long,
     currentTimeTargetInMillis: Long,
     currentPhase: PomodoroPhase?,
+    pomodorosCompleted: Int,
     modifier: Modifier = Modifier,
 ) {
 
@@ -109,31 +112,24 @@ private fun Timer(
                 .scale(scaleX = -1f, scaleY = 1f),
             strokeWidth = 16.dp
         )
-        Column {
-            Box(Modifier.background(Color.Green)) {
-                Text(
-                    text = timeLeftInMillis.toString(),
-                    style = MaterialTheme.typography.h4,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                PomodorosCompletedIndicatorRow(
-                    pomodorosCompleted = 3, modifier = Modifier
-                        .align(
-                            Alignment.BottomStart
-                        )
-                        .padding(top = 60.dp)
-                )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val phaseText = when (currentPhase) {
+                PomodoroPhase.POMODORO -> stringResource(R.string.pomodoro).uppercase()
+                PomodoroPhase.SHORT_BREAK -> stringResource(R.string.short_break).uppercase()
+                PomodoroPhase.LONG_BREAK -> stringResource(R.string.long_break).uppercase()
+                null -> ""
             }
-            Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
-                val phaseText = when (currentPhase) {
-                    PomodoroPhase.POMODORO -> stringResource(R.string.pomodoro).uppercase()
-                    PomodoroPhase.SHORT_BREAK -> stringResource(R.string.short_break).uppercase()
-                    PomodoroPhase.LONG_BREAK -> stringResource(R.string.long_break).uppercase()
-                    null -> ""
-                }
-                Text(phaseText, Modifier.padding(top = 48.dp))
-            }
+            Text(phaseText, Modifier.padding(top = 48.dp), style = MaterialTheme.typography.body2)
+            Spacer(modifier = Modifier.height(4.dp))
+            PomodorosCompletedIndicatorRow(
+                pomodorosCompleted = pomodorosCompleted,
+            )
         }
+
     }
 }
 
@@ -155,9 +151,7 @@ private fun TimerStartStopButton(
         Icon(
             imageVector = startStopIcon,
             contentDescription = contentDescription,
-/*
-            tint = MaterialTheme.colors.primary,
-*/
+
             modifier = modifier
                 .fillMaxSize()
                 .padding(4.dp),
@@ -178,7 +172,6 @@ private fun PomodorosCompletedIndicatorRow(
         SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 2)
         Spacer(modifier = Modifier.width(4.dp))
         SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 3)
-
     }
 }
 
@@ -223,6 +216,7 @@ private fun ScreenContentPreview() {
                 timeLeftInMillis = 15 * 60 * 1000L,
                 currentTimeTargetInMillis = POMODORO_DURATION_IN_MILLIS,
                 currentPhase = PomodoroPhase.POMODORO,
+                pomodorosCompleted = 3,
             )
         }
     }

@@ -24,13 +24,15 @@ object TimerScreenSpec : ScreenSpec {
         val viewModel: TimerViewModel = hiltViewModel(navBackStackEntry)
         val timeLeftInMillis by viewModel.timeLeftInMillis.observeAsState(0L)
         val currentTimeTargetInMillis by viewModel.currentTimeTargetInMillis.observeAsState(0L)
-        val timerRunning by viewModel.timerRunning.observeAsState(false)
         val currentPhase by viewModel.currentPhase.observeAsState()
+        val pomodorosCompleted by viewModel.pomodorosCompleted.observeAsState(0)
+        val timerRunning by viewModel.timerRunning.observeAsState(false)
 
         TimerScreenContent(
             timeLeftInMillis = timeLeftInMillis,
             currentTimeTargetInMillis = currentTimeTargetInMillis,
             currentPhase = currentPhase,
+            pomodorosCompleted = pomodorosCompleted,
             timerRunning = timerRunning,
             actions = viewModel,
         )
