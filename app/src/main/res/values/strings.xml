@@ -28,4 +28,6 @@
     <string name="pomodoro">Pomodoro</string>
     <string name="short_break">Short Break</string>
     <string name="long_break">Long Break</string>
+    <string name="total">Total</string>
+    <string name="reset_pomodoro_count">Reset pomodoro count</string>
 </resources>

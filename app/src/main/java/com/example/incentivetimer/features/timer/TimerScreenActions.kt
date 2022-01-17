@@ -5,4 +5,5 @@ interface TimerScreenActions {
     fun onStopTimerClicked()
     fun onResetTimerClicked()
     fun onResetPomodoroSetClicked()
+    fun onResetPomodoroCountClicked()
 }

@@ -25,16 +25,18 @@ object TimerScreenSpec : ScreenSpec {
         val timeLeftInMillis by viewModel.timeLeftInMillis.observeAsState(0L)
         val currentTimeTargetInMillis by viewModel.currentTimeTargetInMillis.observeAsState(0L)
         val currentPhase by viewModel.currentPhase.observeAsState()
-        val pomodorosCompleted by viewModel.pomodorosCompleted.observeAsState(0)
+        val pomodorosCompletedInSet by viewModel.pomodorosCompletedInSet.observeAsState(0)
+        val pomodorosCompletedTotal by viewModel.pomodorosCompletedTotal.observeAsState(0)
         val timerRunning by viewModel.timerRunning.observeAsState(false)
 
         TimerScreenContent(
             timeLeftInMillis = timeLeftInMillis,
             currentTimeTargetInMillis = currentTimeTargetInMillis,
             currentPhase = currentPhase,
-            pomodorosCompleted = pomodorosCompleted,
+            pomodorosCompletedInSet = pomodorosCompletedInSet,
             timerRunning = timerRunning,
             actions = viewModel,
+            pomodorosCompletedTotal = pomodorosCompletedTotal,
         )
     }
 }

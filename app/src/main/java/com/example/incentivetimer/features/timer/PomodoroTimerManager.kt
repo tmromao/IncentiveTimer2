@@ -28,11 +28,13 @@ class PomodoroTimerManager @Inject constructor(
     private val currentTimeTargetInMillisFlow = MutableStateFlow(POMODORO_DURATION_IN_MILLIS)
     val currentTimeTargetInMillis: Flow<Long> = currentTimeTargetInMillisFlow
 
-    private val pomodorosCompletedFlow = MutableStateFlow(0)
+    private val pomodorosCompletedInSetFlow = MutableStateFlow(0)
+    val pomodorosCompletedInSet: Flow<Int> = pomodorosCompletedInSetFlow
 
-    val pomodorosCompleted: Flow<Int> = pomodorosCompletedFlow
+    private val pomodorosCompletedTotalFlow = MutableStateFlow(0)
+    val pomodorosCompletedTotal: Flow<Int> = pomodorosCompletedTotalFlow
+
     private val pomodorosTargetFlow = MutableStateFlow(POMODOROS_PER_SET)
-
     val pomodorosTarget: Flow<Int> = pomodorosTargetFlow
 
     private var countDownTimer: CountDownTimer? = null
@@ -64,6 +66,7 @@ class PomodoroTimerManager @Inject constructor(
             }
 
             override fun onFinish() {
+                pomodorosCompletedTotalFlow.value++
                 stopTimer()
                 startNextPhase()
             }
@@ -78,19 +81,19 @@ class PomodoroTimerManager @Inject constructor(
     }
 
     private fun resetPomodoroCounterIfTargetReached() {
-        val pomodorosCompleted = pomodorosCompletedFlow.value
+        val pomodorosCompleted = pomodorosCompletedInSetFlow.value
         val pomodorosTarget = pomodorosTargetFlow.value
         val currentPhase = currentPhaseFlow.value
         if (pomodorosCompleted >= pomodorosTarget && currentPhase == PomodoroPhase.POMODORO) {
-            pomodorosCompletedFlow.value = 0
+            pomodorosCompletedInSetFlow.value = 0
         }
     }
 
     private fun startNextPhase() {
         val lastPhase = currentPhaseFlow.value
-        val pomodorosCompleted = if(lastPhase == PomodoroPhase.POMODORO) pomodorosCompletedFlow.value + 1 else pomodorosCompletedFlow.value
+        val pomodorosCompleted = if(lastPhase == PomodoroPhase.POMODORO) pomodorosCompletedInSetFlow.value + 1 else pomodorosCompletedInSetFlow.value
         val pomodorosTarget = pomodorosTargetFlow.value
-        pomodorosCompletedFlow.value = pomodorosCompleted
+        pomodorosCompletedInSetFlow.value = pomodorosCompleted
 
         val nextPhase = getNextPhase(
             lastPhase = lastPhase,

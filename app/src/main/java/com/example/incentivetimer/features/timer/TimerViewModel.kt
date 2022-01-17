@@ -13,7 +13,8 @@ class TimerViewModel @Inject constructor(
     val timeLeftInMillis = pomodoroTimerManager.timeLeftInMillis.asLiveData()
     val currentTimeTargetInMillis = pomodoroTimerManager.currentTimeTargetInMillis.asLiveData()
     val currentPhase = pomodoroTimerManager.currentPhase.asLiveData()
-    val pomodorosCompleted = pomodoroTimerManager.pomodorosCompleted.asLiveData()
+    val pomodorosCompletedInSet = pomodoroTimerManager.pomodorosCompletedInSet.asLiveData()
+    val pomodorosCompletedTotal = pomodoroTimerManager.pomodorosCompletedTotal.asLiveData()
     val timerRunning = pomodoroTimerManager.timerRunning.asLiveData()
 
     override fun onStartStopTimerClicked() {
@@ -29,6 +30,10 @@ class TimerViewModel @Inject constructor(
     }
 
     override fun onResetPomodoroSetClicked() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onResetPomodoroCountClicked() {
         TODO("Not yet implemented")
     }
 }
