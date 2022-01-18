@@ -6,12 +6,20 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLink
+import androidx.navigation.navDeepLink
 import com.example.incentivetimer.features.timer.TimerScreenAppBar
 import com.example.incentivetimer.features.timer.TimerScreenContent
 import com.example.incentivetimer.features.timer.TimerViewModel
 
 object TimerScreenSpec : ScreenSpec {
     override val navHostRoute: String = "Timer"
+
+    override val deepLinks: List<NavDeepLink> = listOf(
+        navDeepLink {
+            uriPattern = "https://www.incentivetimer.com/timer"
+        }
+    )
 
     @Composable
     override fun TopBar(navController: NavController, navBackStackEntry: NavBackStackEntry) {
@@ -22,21 +30,13 @@ object TimerScreenSpec : ScreenSpec {
     @Composable
     override fun Content(navController: NavController, navBackStackEntry: NavBackStackEntry) {
         val viewModel: TimerViewModel = hiltViewModel(navBackStackEntry)
-        val timeLeftInMillis by viewModel.timeLeftInMillis.observeAsState(0L)
-        val currentTimeTargetInMillis by viewModel.currentTimeTargetInMillis.observeAsState(0L)
-        val currentPhase by viewModel.currentPhase.observeAsState()
-        val pomodorosCompletedInSet by viewModel.pomodorosCompletedInSet.observeAsState(0)
-        val pomodorosCompletedTotal by viewModel.pomodorosCompletedTotal.observeAsState(0)
-        val timerRunning by viewModel.timerRunning.observeAsState(false)
+        val pomodoroTimerState by viewModel.pomodoroTimerState.observeAsState()
+
 
         TimerScreenContent(
-            timeLeftInMillis = timeLeftInMillis,
-            currentTimeTargetInMillis = currentTimeTargetInMillis,
-            currentPhase = currentPhase,
-            pomodorosCompletedInSet = pomodorosCompletedInSet,
-            timerRunning = timerRunning,
+            pomodoroTimerState = pomodoroTimerState,
             actions = viewModel,
-            pomodorosCompletedTotal = pomodorosCompletedTotal,
-        )
+
+            )
     }
 }

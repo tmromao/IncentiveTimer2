@@ -8,14 +8,10 @@ import javax.inject.Inject
 @HiltViewModel
 class TimerViewModel @Inject constructor(
     private val pomodoroTimerManager: PomodoroTimerManager,
+
 ) : ViewModel(), TimerScreenActions {
 
-    val timeLeftInMillis = pomodoroTimerManager.timeLeftInMillis.asLiveData()
-    val currentTimeTargetInMillis = pomodoroTimerManager.currentTimeTargetInMillis.asLiveData()
-    val currentPhase = pomodoroTimerManager.currentPhase.asLiveData()
-    val pomodorosCompletedInSet = pomodoroTimerManager.pomodorosCompletedInSet.asLiveData()
-    val pomodorosCompletedTotal = pomodoroTimerManager.pomodorosCompletedTotal.asLiveData()
-    val timerRunning = pomodoroTimerManager.timerRunning.asLiveData()
+    val pomodoroTimerState = pomodoroTimerManager.pomodoroTimerState.asLiveData()
 
     override fun onStartStopTimerClicked() {
         pomodoroTimerManager.startStopTimer()
@@ -26,14 +22,15 @@ class TimerViewModel @Inject constructor(
     }
 
     override fun onResetTimerClicked() {
-        TODO("Not yet implemented")
+        pomodoroTimerManager.resetTimer()
     }
 
     override fun onResetPomodoroSetClicked() {
-        TODO("Not yet implemented")
+        pomodoroTimerManager.resetPomodoroSet()
+
     }
 
     override fun onResetPomodoroCountClicked() {
-        TODO("Not yet implemented")
+        pomodoroTimerManager.resetPomodoroCount()
     }
 }

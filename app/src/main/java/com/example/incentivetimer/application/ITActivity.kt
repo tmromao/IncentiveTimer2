@@ -35,9 +35,9 @@ import com.example.incentivetimer.core.ui.theme.IncentiveTimerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import logcat.logcat
 
-@ExperimentalAnimationApi
+
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class ITActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@ExperimentalAnimationApi
+
 @Composable
 private fun ScreenContent() {
     val navController = rememberNavController()

@@ -2,6 +2,8 @@ package com.example.incentivetimer.features.timer
 
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -69,27 +72,18 @@ fun TimerScreenAppBar(
 
 @Composable
 fun TimerScreenContent(
-    timeLeftInMillis: Long,
-    currentTimeTargetInMillis: Long,
-    currentPhase: PomodoroPhase?,
-    pomodorosCompletedInSet: Int,
-    pomodorosCompletedTotal: Int,
-    timerRunning: Boolean,
+    pomodoroTimerState: PomodoroTimerState?,
     actions: TimerScreenActions,
 ) {
+    val timerRunning = pomodoroTimerState?.timerRunning ?: false
+
     Scaffold {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Timer(
-                timeLeftInMillis = timeLeftInMillis,
-                currentTimeTargetInMillis = currentTimeTargetInMillis,
-                currentPhase = currentPhase,
-                pomodorosCompletedInSet = pomodorosCompletedInSet,
-                pomodorosCompletedTotal = pomodorosCompletedTotal,
-            )
+            Timer(pomodoroTimerState = pomodoroTimerState)
             Spacer(Modifier.height(48.dp))
             TimerStartStopButton(
                 timerRunning = timerRunning,
@@ -101,15 +95,17 @@ fun TimerScreenContent(
 
 @Composable
 private fun Timer(
-    timeLeftInMillis: Long,
-    currentTimeTargetInMillis: Long,
-    currentPhase: PomodoroPhase?,
-    pomodorosCompletedInSet: Int,
-    pomodorosCompletedTotal: Int,
+    pomodoroTimerState: PomodoroTimerState?,
     modifier: Modifier = Modifier,
 ) {
+    val timeLeftInMillis = pomodoroTimerState?.timeLeftInMillis ?: 0L
+    val timeTargetInMillis = pomodoroTimerState?.timeTargetInMillis ?: 0L
+    val currentPhase = pomodoroTimerState?.currentPhase
+    val pomodorosCompletedInSet = pomodoroTimerState?.pomodorosCompletedInSet ?: 0
+    val pomodorosPerSetTarget = pomodoroTimerState?.pomodorosPerSetTarget ?: 0
+    val pomodorosCompletedTotal = pomodoroTimerState?.pomodorosCompletedTotal ?: 0
 
-    val progress = timeLeftInMillis.toFloat() / currentTimeTargetInMillis.toFloat()
+    val progress = timeLeftInMillis.toFloat() / timeTargetInMillis.toFloat()
 
     Box(modifier.size(250.dp), contentAlignment = Alignment.Center) {
         RoundedCornerCircularProgressIndicatorWithBackground(
@@ -119,18 +115,25 @@ private fun Timer(
                 .scale(scaleX = -1f, scaleY = 1f),
             strokeWidth = 16.dp
         )
+        Text(
+            text = timeLeftInMillis.toString(),
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.align(Alignment.Center)
+        )
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxSize()
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
         ) {
-            val phaseText = when (currentPhase) {
-                PomodoroPhase.POMODORO -> stringResource(R.string.pomodoro).uppercase()
-                PomodoroPhase.SHORT_BREAK -> stringResource(R.string.short_break).uppercase()
-                PomodoroPhase.LONG_BREAK -> stringResource(R.string.long_break).uppercase()
-                null -> ""
-            }
+            val phaseText = if (currentPhase !=null) stringResource(currentPhase.readableName) else ""
             Text(phaseText, Modifier.padding(top = 48.dp), style = MaterialTheme.typography.body2)
             Spacer(modifier = Modifier.height(4.dp))
-            PomodorosCompletedIndicatorRow(pomodorosCompleted = pomodorosCompletedInSet)
+            val timerRunning = pomodoroTimerState?.timerRunning ?: false
+            PomodorosCompletedIndicatorRow(
+                pomodorosCompletedInSet = pomodorosCompletedInSet,
+                pomodorosPerSetTarget = pomodorosPerSetTarget,
+                timerRunning = timerRunning,
+                currentPhase = currentPhase,
+            )
         }
         //Total number of pomodoros
         Text(
@@ -171,34 +174,61 @@ private fun TimerStartStopButton(
 
 @Composable
 private fun PomodorosCompletedIndicatorRow(
-    pomodorosCompleted: Int,
+    pomodorosCompletedInSet: Int,
+    pomodorosPerSetTarget: Int,
+    timerRunning: Boolean,
+    currentPhase: PomodoroPhase?,
     modifier: Modifier = Modifier
 ) {
+    val pomodoroInProgress = timerRunning && currentPhase == PomodoroPhase.POMODORO
+
     Row(modifier) {
-        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 0)
-        Spacer(modifier = Modifier.width(4.dp))
-        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 1)
-        Spacer(modifier = Modifier.width(4.dp))
-        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 2)
-        Spacer(modifier = Modifier.width(4.dp))
-        SinglePomodoroCompletedIndicator(completed = pomodorosCompleted > 3)
+        repeat(pomodorosPerSetTarget) { index ->
+            key(index) {
+                SinglePomodoroCompletedIndicator(
+                    completed = pomodorosCompletedInSet > index,
+                    inProgress = pomodoroInProgress && pomodorosCompletedInSet == index
+                )
+                if (index < pomodorosPerSetTarget - 1) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+            }
+        }
     }
+
+
 }
 
 @Composable
 private fun SinglePomodoroCompletedIndicator(
     completed: Boolean,
+    inProgress: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val color =
-        if (!completed) MaterialTheme.colors.primary.copy(alpha = PrimaryLightAlpha) else MaterialTheme.colors.primary
+    val uncompletedColor = MaterialTheme.colors.primary.copy(alpha = PrimaryLightAlpha)
+    val completedColor = MaterialTheme.colors.primary
+
+    val infiniteTransition = rememberInfiniteTransition()
+    val inProgressColor by infiniteTransition.animateColor(
+        initialValue = uncompletedColor,
+        targetValue = completedColor,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse,
+        )
+    )
+    val color = when {
+        completed -> completedColor
+        inProgress -> inProgressColor
+        else -> uncompletedColor
+    }
+
     Box(
         modifier = Modifier
             .clip(CircleShape)
             .size(8.dp)
             .background(color)
     )
-
 }
 
 @Preview(
@@ -215,20 +245,25 @@ private fun ScreenContentPreview() {
     IncentiveTimerTheme() {
         Surface() {
             TimerScreenContent(
-                timerRunning = true,
+                pomodoroTimerState = PomodoroTimerState(
+                    timerRunning = true,
+                    timeLeftInMillis = 15 * 60 * 1000L,
+                    timeTargetInMillis = POMODORO_DURATION_IN_MILLIS,
+                    currentPhase = PomodoroPhase.POMODORO,
+                    pomodorosCompletedInSet = 3,
+                    pomodorosCompletedTotal = 5,
+                    pomodorosPerSetTarget = 4,
+                ),
                 actions = object : TimerScreenActions {
-                    override fun onStartStopTimerClicked() {}
-                    override fun onStopTimerClicked() {}
-
                     override fun onResetTimerClicked() {}
                     override fun onResetPomodoroSetClicked() {}
+                    override fun onStartStopTimerClicked() {}
+                    override fun onStopTimerClicked() {
+                        TODO("Not yet implemented")
+                    }
+
                     override fun onResetPomodoroCountClicked() {}
                 },
-                timeLeftInMillis = 15 * 60 * 1000L,
-                currentTimeTargetInMillis = POMODORO_DURATION_IN_MILLIS,
-                currentPhase = PomodoroPhase.POMODORO,
-                pomodorosCompletedInSet = 3,
-                pomodorosCompletedTotal = 5,
             )
         }
     }

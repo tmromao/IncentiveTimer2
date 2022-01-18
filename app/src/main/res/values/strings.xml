@@ -30,4 +30,9 @@
     <string name="long_break">Long Break</string>
     <string name="total">Total</string>
     <string name="reset_pomodoro_count">Reset pomodoro count</string>
+    <string name="timer_service_channel_name">Timer service channel name</string>
+    <string name="pomodoro_completed">Pomodoro completed</string>
+    <string name="time_for_a_break">Time for a break</string>
+    <string name="break_is_over">Break is over</string>
+    <string name="time_to_get_back_to_work">Time to get back to work</string>
 </resources>
